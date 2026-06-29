@@ -15,6 +15,7 @@ function DashboardLayout() {
       <main className="flex-1 overflow-y-auto">
         <Outlet />
       </main>
+      <Toaster position="top-right" richColors />
     </div>
   );
 }
