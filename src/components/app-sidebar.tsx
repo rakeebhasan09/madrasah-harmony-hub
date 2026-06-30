@@ -6,6 +6,7 @@ import {
   BookOpen,
   GraduationCap,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { CLASSES } from "@/lib/madrasah-data";
