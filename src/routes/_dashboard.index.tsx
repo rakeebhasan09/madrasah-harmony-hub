@@ -14,11 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   CLASSES,
-  STUDENTS,
-  TEACHERS,
-  studentsByClass,
   formatBDT,
 } from "@/lib/madrasah-data";
+import { useStudents, useTeachers } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/")({
   head: () => ({
@@ -39,20 +37,21 @@ interface Stat {
 }
 
 function Overview() {
-  const totalStudents = STUDENTS.length;
-  const totalTeachers = TEACHERS.length;
+  const students = useStudents();
+  const teachers = useTeachers();
+  const totalStudents = students.length;
+  const totalTeachers = teachers.length;
 
   // Expected vs collected fees for the current month (index 5 = June in mock).
   const month = 5;
   let expected = 0;
   let collected = 0;
-  for (const cls of CLASSES) {
-    const list = studentsByClass(cls.id);
-    expected += list.length * cls.monthlyFee;
-    collected += list.filter((s) => s.paidMonths.includes(month)).length * cls.monthlyFee;
+  for (const s of students) {
+    expected += s.monthlyFee;
+    if (s.paidMonths.includes(month)) collected += s.monthlyFee;
   }
   const due = expected - collected;
-  const salaryTotal = TEACHERS.reduce((sum, t) => sum + t.salary, 0);
+  const salaryTotal = teachers.reduce((sum, t) => sum + t.salary, 0);
 
   const stats: Stat[] = [
     { label: "Total Students", value: String(totalStudents), icon: Users, hint: `Across ${CLASSES.length} classes` },
@@ -100,8 +99,10 @@ function Overview() {
             </CardHeader>
             <CardContent className="space-y-4">
               {CLASSES.map((cls) => {
-                const count = studentsByClass(cls.id).length;
-                const pct = Math.round((count / totalStudents) * 100);
+                const list = students.filter((s) => s.classId === cls.id);
+                const count = list.length;
+                const pct = totalStudents ? Math.round((count / totalStudents) * 100) : 0;
+                const classFees = list.reduce((sum, s) => sum + s.monthlyFee, 0);
                 return (
                   <Link
                     key={cls.id}
@@ -112,7 +113,7 @@ function Overview() {
                     <div className="mb-1.5 flex items-center justify-between text-sm">
                       <span className="font-medium text-foreground">{cls.name}</span>
                       <span className="text-muted-foreground">
-                        {count} students · {formatBDT(cls.monthlyFee)}/mo
+                        {count} students · {formatBDT(classFees)}/mo
                       </span>
                     </div>
                     <Progress value={pct} />

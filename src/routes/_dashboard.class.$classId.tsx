@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/table";
 import {
   getClass,
-  studentsByClass,
   formatBDT,
   type ClassId,
 } from "@/lib/madrasah-data";
+import { useStudents } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/class/$classId")({
   head: ({ params }) => {
@@ -58,15 +58,18 @@ function initials(name: string) {
 
 function ClassPage() {
   const { cls } = Route.useLoaderData();
-  const students = studentsByClass(cls.id as ClassId);
+  const allStudents = useStudents();
+  const students = allStudents.filter((s) => s.classId === (cls.id as ClassId));
   const paidCount = students.filter((s) => s.paidMonths.includes(CURRENT_MONTH)).length;
+  const monthlyTotal = students.reduce((sum, s) => sum + s.monthlyFee, 0);
 
   return (
     <div>
       <DashboardHeader
         title={`Class ${cls.name}`}
-        subtitle={`${students.length} students · Monthly fee ${formatBDT(cls.monthlyFee)}`}
+        subtitle={`${students.length} students · Monthly fees ${formatBDT(monthlyTotal)}`}
       />
+
 
       <div className="space-y-6 p-6">
         <div className="grid gap-4 sm:grid-cols-3">
@@ -131,6 +134,7 @@ function ClassPage() {
                   <TableHead>Gender</TableHead>
                   <TableHead>Blood</TableHead>
                   <TableHead>Guardian Mobile</TableHead>
+                  <TableHead className="text-right">Monthly Fee</TableHead>
                   <TableHead className="text-right">This Month</TableHead>
                 </TableRow>
               </TableHeader>
@@ -156,6 +160,7 @@ function ClassPage() {
                       <TableCell>{s.gender}</TableCell>
                       <TableCell>{s.bloodGroup}</TableCell>
                       <TableCell className="tabular-nums">{s.guardianMobile}</TableCell>
+                      <TableCell className="text-right font-medium tabular-nums">{formatBDT(s.monthlyFee)}</TableCell>
                       <TableCell className="text-right">
                         {paid ? (
                           <Badge variant="secondary" className="bg-success/15 text-success">

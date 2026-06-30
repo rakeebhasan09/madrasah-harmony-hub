@@ -37,7 +37,9 @@ import {
   RELIGIONS,
   BLOOD_GROUPS,
   NATIONALITIES,
+  type ClassId,
 } from "@/lib/madrasah-data";
+import { addStudent } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/students/new")({
   head: () => ({
@@ -67,6 +69,10 @@ const schema = z.object({
   motherMobile: mobile,
   guardianMobile: mobile,
   classId: z.string().min(1, "Select a class"),
+  monthlyFee: z.coerce
+    .number({ message: "Enter the monthly fee" })
+    .min(1, "Enter a valid amount")
+    .max(100000, "Amount too large"),
   gender: z.string().min(1, "Select gender"),
   religion: z.string().min(1, "Select religion"),
   bloodGroup: z.string().min(1, "Select blood group"),
@@ -135,7 +141,18 @@ function RegisterStudent() {
   }
 
   function onSubmit(values: FormValues) {
-    // UI shell only — no backend yet. Show confirmation and return to class.
+    // UI shell only — persists to the in-memory store for this session.
+    addStudent({
+      nameEn: values.nameEn,
+      nameBn: values.nameBn,
+      fatherEn: values.fatherEn,
+      motherEn: values.motherEn,
+      classId: values.classId as ClassId,
+      gender: values.gender,
+      guardianMobile: values.guardianMobile,
+      bloodGroup: values.bloodGroup,
+      monthlyFee: values.monthlyFee,
+    });
     toast.success(`${values.nameEn} registered successfully.`);
     navigate({ to: "/class/$classId", params: { classId: values.classId } });
   }
@@ -276,6 +293,22 @@ function RegisterStudent() {
                     </Select>
                     <FormMessage />
                   </FormItem>
+                )} />
+                <FormField control={form.control} name="monthlyFee" render={({ field }) => (
+                  <Field label="Monthly Fee (৳)">
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Agreed amount, e.g. 800"
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    />
+                  </Field>
                 )} />
                 <FormField control={form.control} name="gender" render={({ field }) => (
                   <FormItem>

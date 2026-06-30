@@ -12,17 +12,16 @@ export type ClassId =
 export interface ClassInfo {
   id: ClassId;
   name: string;
-  monthlyFee: number;
 }
 
 export const CLASSES: ClassInfo[] = [
-  { id: "play", name: "Play", monthlyFee: 500 },
-  { id: "nursery", name: "Nursery", monthlyFee: 600 },
-  { id: "one", name: "One", monthlyFee: 700 },
-  { id: "two", name: "Two", monthlyFee: 800 },
-  { id: "three", name: "Three", monthlyFee: 900 },
-  { id: "four", name: "Four", monthlyFee: 1000 },
-  { id: "hifz", name: "Hifz", monthlyFee: 1200 },
+  { id: "play", name: "Play" },
+  { id: "nursery", name: "Nursery" },
+  { id: "one", name: "One" },
+  { id: "two", name: "Two" },
+  { id: "three", name: "Three" },
+  { id: "four", name: "Four" },
+  { id: "hifz", name: "Hifz" },
 ];
 
 export function getClass(id: string): ClassInfo | undefined {
@@ -62,6 +61,8 @@ export interface Student {
   gender: string;
   guardianMobile: string;
   bloodGroup: string;
+  // Individually agreed monthly fee, set at admission time.
+  monthlyFee: number;
   // Months (index 0-11) that have been paid this year.
   paidMonths: number[];
 }
@@ -73,6 +74,8 @@ export interface Teacher {
   mobile: string;
   salary: number;
   joined: string;
+  // Months (index 0-11) that the salary has been paid this year.
+  paidMonths: number[];
 }
 
 const firstNames = [
@@ -81,6 +84,17 @@ const firstNames = [
   "Nusaiba", "Saif", "Hafsa", "Imran", "Ruqayyah",
 ];
 const lastNames = ["Rahman", "Hossain", "Islam", "Ahmed", "Chowdhury", "Khan", "Sarker"];
+
+// Approximate fee band per class (used only to seed varied mock data).
+const classFeeBand: Record<ClassId, number> = {
+  play: 500,
+  nursery: 600,
+  one: 700,
+  two: 800,
+  three: 900,
+  four: 1000,
+  hifz: 1200,
+};
 
 function seeded(seed: number) {
   let s = seed;
@@ -103,6 +117,9 @@ function buildStudents(): Student[] {
       for (let m = 0; m < 6; m++) {
         if (rand() > 0.25) paid.push(m);
       }
+      // Individually varied fee around the class band.
+      const base = classFeeBand[cls.id];
+      const fee = base + Math.floor(rand() * 4) * 50;
       students.push({
         id: `STD-${String(idCounter).padStart(4, "0")}`,
         roll: i + 1,
@@ -114,6 +131,7 @@ function buildStudents(): Student[] {
         gender: rand() > 0.5 ? "Male" : "Female",
         guardianMobile: `017${Math.floor(10000000 + rand() * 89999999)}`,
         bloodGroup: BLOOD_GROUPS[Math.floor(rand() * BLOOD_GROUPS.length)],
+        monthlyFee: fee,
         paidMonths: paid,
       });
       idCounter++;
@@ -129,12 +147,12 @@ export function studentsByClass(classId: ClassId): Student[] {
 }
 
 export const TEACHERS: Teacher[] = [
-  { id: "TCH-01", name: "Maulana Abdul Karim", subject: "Hifz & Qira'at", mobile: "01711000001", salary: 25000, joined: "2019-01-10" },
-  { id: "TCH-02", name: "Ustadha Salma Khatun", subject: "Nursery & Play", mobile: "01711000002", salary: 18000, joined: "2020-03-15" },
-  { id: "TCH-03", name: "Mufti Rashedul Islam", subject: "Fiqh & Arabic", mobile: "01711000003", salary: 28000, joined: "2018-07-01" },
-  { id: "TCH-04", name: "Hafiz Naimur Rahman", subject: "Hifz", mobile: "01711000004", salary: 24000, joined: "2021-02-20" },
-  { id: "TCH-05", name: "Ustadha Tahmina Akter", subject: "Bangla & English", mobile: "01711000005", salary: 17000, joined: "2022-08-05" },
-  { id: "TCH-06", name: "Maulana Shahidul Haque", subject: "Class One–Four", mobile: "01711000006", salary: 22000, joined: "2017-09-12" },
+  { id: "TCH-01", name: "Maulana Abdul Karim", subject: "Hifz & Qira'at", mobile: "01711000001", salary: 25000, joined: "2019-01-10", paidMonths: [0, 1, 2, 3, 4] },
+  { id: "TCH-02", name: "Ustadha Salma Khatun", subject: "Nursery & Play", mobile: "01711000002", salary: 18000, joined: "2020-03-15", paidMonths: [0, 1, 2, 3, 4] },
+  { id: "TCH-03", name: "Mufti Rashedul Islam", subject: "Fiqh & Arabic", mobile: "01711000003", salary: 28000, joined: "2018-07-01", paidMonths: [0, 1, 2, 3] },
+  { id: "TCH-04", name: "Hafiz Naimur Rahman", subject: "Hifz", mobile: "01711000004", salary: 24000, joined: "2021-02-20", paidMonths: [0, 1, 2, 3, 4] },
+  { id: "TCH-05", name: "Ustadha Tahmina Akter", subject: "Bangla & English", mobile: "01711000005", salary: 17000, joined: "2022-08-05", paidMonths: [0, 1, 2] },
+  { id: "TCH-06", name: "Maulana Shahidul Haque", subject: "Class One–Four", mobile: "01711000006", salary: 22000, joined: "2017-09-12", paidMonths: [0, 1, 2, 3, 4] },
 ];
 
 export function formatBDT(amount: number): string {

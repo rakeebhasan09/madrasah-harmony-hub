@@ -14,58 +14,46 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import {
-  CLASSES,
-  MONTHS,
-  getClass,
-  formatBDT,
-  type ClassId,
-} from "@/lib/madrasah-data";
-import { useStudents, recordStudentPayment } from "@/lib/madrasah-store";
+import { MONTHS, formatBDT } from "@/lib/madrasah-data";
+import { useTeachers, recordSalaryPayment } from "@/lib/madrasah-store";
 
-export const Route = createFileRoute("/_dashboard/fees")({
+export const Route = createFileRoute("/_dashboard/salaries")({
   head: () => ({
     meta: [
-      { title: "Fee Collection — Madrasah Management System" },
-      { name: "description", content: "Record monthly student fee payments." },
+      { title: "Salary Payment — Madrasah Management System" },
+      { name: "description", content: "Record monthly teacher salary payments." },
     ],
   }),
-  component: FeesPage,
+  component: SalariesPage,
 });
 
-function FeesPage() {
-  const students = useStudents();
-  const [classId, setClassId] = useState<string>("");
-  const [studentId, setStudentId] = useState<string>("");
+function SalariesPage() {
+  const teachers = useTeachers();
+  const [teacherId, setTeacherId] = useState<string>("");
   const [month, setMonth] = useState<string>("");
 
-  const classStudents = classId
-    ? students.filter((s) => s.classId === (classId as ClassId))
-    : [];
-  const student = useMemo(
-    () => students.find((s) => s.id === studentId),
-    [students, studentId],
+  const teacher = useMemo(
+    () => teachers.find((t) => t.id === teacherId),
+    [teachers, teacherId],
   );
-  const cls = student ? getClass(student.classId) : undefined;
 
-  const paidMonths = student ? student.paidMonths : [];
-
+  const paidMonths = teacher ? teacher.paidMonths : [];
   const monthIdx = month === "" ? -1 : Number(month);
   const alreadyPaid = monthIdx >= 0 && paidMonths.includes(monthIdx);
-  const canRecord = !!student && monthIdx >= 0 && !alreadyPaid;
+  const canRecord = !!teacher && monthIdx >= 0 && !alreadyPaid;
 
   function record() {
-    if (!student || monthIdx < 0) return;
-    recordStudentPayment(student.id, monthIdx);
+    if (!teacher || monthIdx < 0) return;
+    recordSalaryPayment(teacher.id, monthIdx);
     toast.success(
-      `Recorded ${formatBDT(student.monthlyFee)} for ${student.nameEn} — ${MONTHS[monthIdx]}`,
+      `Recorded ${formatBDT(teacher.salary)} salary for ${teacher.name} — ${MONTHS[monthIdx]}`,
     );
     setMonth("");
   }
 
   return (
     <div>
-      <DashboardHeader title="Fee Collection" subtitle="Record a student's monthly fee payment" />
+      <DashboardHeader title="Salary Payment" subtitle="Record a teacher's monthly salary payment" />
 
       <div className="grid gap-6 p-6 lg:grid-cols-5">
         <Card className="lg:col-span-3">
@@ -75,42 +63,20 @@ function FeesPage() {
           <CardContent className="space-y-5">
             <div className="grid gap-4 sm:grid-cols-2">
               <div className="space-y-2">
-                <label className="text-sm font-medium">Class</label>
-                <Select
-                  value={classId}
-                  onValueChange={(v) => {
-                    setClassId(v);
-                    setStudentId("");
-                  }}
-                >
-                  <SelectTrigger><SelectValue placeholder="Select class" /></SelectTrigger>
+                <label className="text-sm font-medium">Teacher</label>
+                <Select value={teacherId} onValueChange={setTeacherId}>
+                  <SelectTrigger><SelectValue placeholder="Select teacher" /></SelectTrigger>
                   <SelectContent>
-                    {CLASSES.map((c) => (
-                      <SelectItem key={c.id} value={c.id}>{c.name}</SelectItem>
+                    {teachers.map((t) => (
+                      <SelectItem key={t.id} value={t.id}>{t.name}</SelectItem>
                     ))}
                   </SelectContent>
                 </Select>
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Student</label>
-                <Select value={studentId} onValueChange={setStudentId} disabled={!classId}>
-                  <SelectTrigger>
-                    <SelectValue placeholder={classId ? "Select student" : "Select class first"} />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {classStudents.map((s) => (
-                      <SelectItem key={s.id} value={s.id}>
-                        {s.roll}. {s.nameEn}
-                      </SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
-              </div>
-
-              <div className="space-y-2">
-                <label className="text-sm font-medium">Payment Month</label>
-                <Select value={month} onValueChange={setMonth} disabled={!student}>
+                <label className="text-sm font-medium">Salary Month</label>
+                <Select value={month} onValueChange={setMonth} disabled={!teacher}>
                   <SelectTrigger><SelectValue placeholder="Select month" /></SelectTrigger>
                   <SelectContent>
                     {MONTHS.map((m, i) => (
@@ -123,16 +89,16 @@ function FeesPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Amount (set at admission)</label>
+                <label className="text-sm font-medium">Salary Amount</label>
                 <div className="flex h-9 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium tabular-nums">
-                  {student ? formatBDT(student.monthlyFee) : "—"}
+                  {teacher ? formatBDT(teacher.salary) : "—"}
                 </div>
               </div>
             </div>
 
             {alreadyPaid ? (
               <p className="text-sm text-warning-foreground">
-                This month is already marked as paid for this student.
+                This month's salary is already marked as paid for this teacher.
               </p>
             ) : null}
 
@@ -147,12 +113,12 @@ function FeesPage() {
             <CardTitle>Payment Status</CardTitle>
           </CardHeader>
           <CardContent>
-            {student ? (
+            {teacher ? (
               <div className="space-y-4">
                 <div>
-                  <p className="font-medium text-foreground">{student.nameEn}</p>
+                  <p className="font-medium text-foreground">{teacher.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {cls?.name} · Roll {student.roll} · {student.id} · {formatBDT(student.monthlyFee)}/mo
+                    {teacher.subject} · {teacher.id} · {formatBDT(teacher.salary)}/mo
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
@@ -182,7 +148,7 @@ function FeesPage() {
               </div>
             ) : (
               <p className="text-sm text-muted-foreground">
-                Select a class and student to view their payment status.
+                Select a teacher to view their salary payment status.
               </p>
             )}
           </CardContent>

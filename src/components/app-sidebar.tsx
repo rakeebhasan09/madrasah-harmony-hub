@@ -6,6 +6,7 @@ import {
   BookOpen,
   GraduationCap,
   Users,
+  Wallet,
   type LucideIcon,
 } from "lucide-react";
 import { CLASSES } from "@/lib/madrasah-data";
@@ -42,6 +43,7 @@ const classItems: NavItem[] = CLASSES.map((c) => ({
 
 const bottomItems: NavItem[] = [
   { label: "Teachers", to: "/teachers", icon: Users },
+  { label: "Salary Payment", to: "/salaries", icon: Wallet },
 ];
 
 function NavLink({ item, active }: { item: NavItem; active: boolean }) {

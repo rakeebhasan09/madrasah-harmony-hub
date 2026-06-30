@@ -14,7 +14,10 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as DashboardIndexRouteImport } from './routes/_dashboard.index'
 import { Route as DashboardTeachersRouteImport } from './routes/_dashboard.teachers'
+import { Route as DashboardSearchRouteImport } from './routes/_dashboard.search'
+import { Route as DashboardSalariesRouteImport } from './routes/_dashboard.salaries'
 import { Route as DashboardFeesRouteImport } from './routes/_dashboard.fees'
+import { Route as DashboardTeachersNewRouteImport } from './routes/_dashboard.teachers.new'
 import { Route as DashboardStudentsNewRouteImport } from './routes/_dashboard.students.new'
 import { Route as DashboardClassClassIdRouteImport } from './routes/_dashboard.class.$classId'
 
@@ -42,10 +45,25 @@ const DashboardTeachersRoute = DashboardTeachersRouteImport.update({
   path: '/teachers',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSearchRoute = DashboardSearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardSalariesRoute = DashboardSalariesRouteImport.update({
+  id: '/salaries',
+  path: '/salaries',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardFeesRoute = DashboardFeesRouteImport.update({
   id: '/fees',
   path: '/fees',
   getParentRoute: () => DashboardRoute,
+} as any)
+const DashboardTeachersNewRoute = DashboardTeachersNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => DashboardTeachersRoute,
 } as any)
 const DashboardStudentsNewRoute = DashboardStudentsNewRouteImport.update({
   id: '/students/new',
@@ -63,18 +81,24 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/fees': typeof DashboardFeesRoute
-  '/teachers': typeof DashboardTeachersRoute
+  '/salaries': typeof DashboardSalariesRoute
+  '/search': typeof DashboardSearchRoute
+  '/teachers': typeof DashboardTeachersRouteWithChildren
   '/class/$classId': typeof DashboardClassClassIdRoute
   '/students/new': typeof DashboardStudentsNewRoute
+  '/teachers/new': typeof DashboardTeachersNewRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/fees': typeof DashboardFeesRoute
-  '/teachers': typeof DashboardTeachersRoute
+  '/salaries': typeof DashboardSalariesRoute
+  '/search': typeof DashboardSearchRoute
+  '/teachers': typeof DashboardTeachersRouteWithChildren
   '/': typeof DashboardIndexRoute
   '/class/$classId': typeof DashboardClassClassIdRoute
   '/students/new': typeof DashboardStudentsNewRoute
+  '/teachers/new': typeof DashboardTeachersNewRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -82,10 +106,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_dashboard/fees': typeof DashboardFeesRoute
-  '/_dashboard/teachers': typeof DashboardTeachersRoute
+  '/_dashboard/salaries': typeof DashboardSalariesRoute
+  '/_dashboard/search': typeof DashboardSearchRoute
+  '/_dashboard/teachers': typeof DashboardTeachersRouteWithChildren
   '/_dashboard/': typeof DashboardIndexRoute
   '/_dashboard/class/$classId': typeof DashboardClassClassIdRoute
   '/_dashboard/students/new': typeof DashboardStudentsNewRoute
+  '/_dashboard/teachers/new': typeof DashboardTeachersNewRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -94,28 +121,37 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/fees'
+    | '/salaries'
+    | '/search'
     | '/teachers'
     | '/class/$classId'
     | '/students/new'
+    | '/teachers/new'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
     | '/sitemap.xml'
     | '/fees'
+    | '/salaries'
+    | '/search'
     | '/teachers'
     | '/'
     | '/class/$classId'
     | '/students/new'
+    | '/teachers/new'
   id:
     | '__root__'
     | '/_dashboard'
     | '/login'
     | '/sitemap.xml'
     | '/_dashboard/fees'
+    | '/_dashboard/salaries'
+    | '/_dashboard/search'
     | '/_dashboard/teachers'
     | '/_dashboard/'
     | '/_dashboard/class/$classId'
     | '/_dashboard/students/new'
+    | '/_dashboard/teachers/new'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -161,12 +197,33 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardTeachersRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/search': {
+      id: '/_dashboard/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof DashboardSearchRouteImport
+      parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/salaries': {
+      id: '/_dashboard/salaries'
+      path: '/salaries'
+      fullPath: '/salaries'
+      preLoaderRoute: typeof DashboardSalariesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/fees': {
       id: '/_dashboard/fees'
       path: '/fees'
       fullPath: '/fees'
       preLoaderRoute: typeof DashboardFeesRouteImport
       parentRoute: typeof DashboardRoute
+    }
+    '/_dashboard/teachers/new': {
+      id: '/_dashboard/teachers/new'
+      path: '/new'
+      fullPath: '/teachers/new'
+      preLoaderRoute: typeof DashboardTeachersNewRouteImport
+      parentRoute: typeof DashboardTeachersRoute
     }
     '/_dashboard/students/new': {
       id: '/_dashboard/students/new'
@@ -185,9 +242,22 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface DashboardTeachersRouteChildren {
+  DashboardTeachersNewRoute: typeof DashboardTeachersNewRoute
+}
+
+const DashboardTeachersRouteChildren: DashboardTeachersRouteChildren = {
+  DashboardTeachersNewRoute: DashboardTeachersNewRoute,
+}
+
+const DashboardTeachersRouteWithChildren =
+  DashboardTeachersRoute._addFileChildren(DashboardTeachersRouteChildren)
+
 interface DashboardRouteChildren {
   DashboardFeesRoute: typeof DashboardFeesRoute
-  DashboardTeachersRoute: typeof DashboardTeachersRoute
+  DashboardSalariesRoute: typeof DashboardSalariesRoute
+  DashboardSearchRoute: typeof DashboardSearchRoute
+  DashboardTeachersRoute: typeof DashboardTeachersRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardClassClassIdRoute: typeof DashboardClassClassIdRoute
   DashboardStudentsNewRoute: typeof DashboardStudentsNewRoute
@@ -195,7 +265,9 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFeesRoute: DashboardFeesRoute,
-  DashboardTeachersRoute: DashboardTeachersRoute,
+  DashboardSalariesRoute: DashboardSalariesRoute,
+  DashboardSearchRoute: DashboardSearchRoute,
+  DashboardTeachersRoute: DashboardTeachersRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardClassClassIdRoute: DashboardClassClassIdRoute,
   DashboardStudentsNewRoute: DashboardStudentsNewRoute,
