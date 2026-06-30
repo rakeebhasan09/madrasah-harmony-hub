@@ -58,15 +58,18 @@ function initials(name: string) {
 
 function ClassPage() {
   const { cls } = Route.useLoaderData();
-  const students = studentsByClass(cls.id as ClassId);
+  const allStudents = useStudents();
+  const students = allStudents.filter((s) => s.classId === (cls.id as ClassId));
   const paidCount = students.filter((s) => s.paidMonths.includes(CURRENT_MONTH)).length;
+  const monthlyTotal = students.reduce((sum, s) => sum + s.monthlyFee, 0);
 
   return (
     <div>
       <DashboardHeader
         title={`Class ${cls.name}`}
-        subtitle={`${students.length} students · Monthly fee ${formatBDT(cls.monthlyFee)}`}
+        subtitle={`${students.length} students · Monthly fees ${formatBDT(monthlyTotal)}`}
       />
+
 
       <div className="space-y-6 p-6">
         <div className="grid gap-4 sm:grid-cols-3">
