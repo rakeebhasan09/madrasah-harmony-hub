@@ -17,12 +17,11 @@ import {
 import {
   CLASSES,
   MONTHS,
-  STUDENTS,
   getClass,
-  studentsByClass,
   formatBDT,
   type ClassId,
 } from "@/lib/madrasah-data";
+import { useStudents, recordStudentPayment } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/fees")({
   head: () => ({
@@ -35,37 +34,31 @@ export const Route = createFileRoute("/_dashboard/fees")({
 });
 
 function FeesPage() {
+  const students = useStudents();
   const [classId, setClassId] = useState<string>("");
   const [studentId, setStudentId] = useState<string>("");
   const [month, setMonth] = useState<string>("");
-  // Local record of newly collected payments (UI shell only).
-  const [collected, setCollected] = useState<Record<string, number[]>>({});
 
-  const classStudents = classId ? studentsByClass(classId as ClassId) : [];
+  const classStudents = classId
+    ? students.filter((s) => s.classId === (classId as ClassId))
+    : [];
   const student = useMemo(
-    () => STUDENTS.find((s) => s.id === studentId),
-    [studentId],
+    () => students.find((s) => s.id === studentId),
+    [students, studentId],
   );
   const cls = student ? getClass(student.classId) : undefined;
 
-  const paidMonths = useMemo(() => {
-    if (!student) return [] as number[];
-    const extra = collected[student.id] ?? [];
-    return Array.from(new Set([...student.paidMonths, ...extra])).sort((a, b) => a - b);
-  }, [student, collected]);
+  const paidMonths = student ? student.paidMonths : [];
 
   const monthIdx = month === "" ? -1 : Number(month);
   const alreadyPaid = monthIdx >= 0 && paidMonths.includes(monthIdx);
-  const canRecord = student && monthIdx >= 0 && !alreadyPaid;
+  const canRecord = !!student && monthIdx >= 0 && !alreadyPaid;
 
   function record() {
     if (!student || monthIdx < 0) return;
-    setCollected((prev) => ({
-      ...prev,
-      [student.id]: [...(prev[student.id] ?? []), monthIdx],
-    }));
+    recordStudentPayment(student.id, monthIdx);
     toast.success(
-      `Recorded ${cls ? formatBDT(cls.monthlyFee) : ""} for ${student.nameEn} — ${MONTHS[monthIdx]}`,
+      `Recorded ${formatBDT(student.monthlyFee)} for ${student.nameEn} — ${MONTHS[monthIdx]}`,
     );
     setMonth("");
   }
@@ -130,9 +123,9 @@ function FeesPage() {
               </div>
 
               <div className="space-y-2">
-                <label className="text-sm font-medium">Amount (fixed by class)</label>
+                <label className="text-sm font-medium">Amount (set at admission)</label>
                 <div className="flex h-9 items-center rounded-md border border-input bg-muted px-3 text-sm font-medium tabular-nums">
-                  {cls ? formatBDT(cls.monthlyFee) : "—"}
+                  {student ? formatBDT(student.monthlyFee) : "—"}
                 </div>
               </div>
             </div>
@@ -159,7 +152,7 @@ function FeesPage() {
                 <div>
                   <p className="font-medium text-foreground">{student.nameEn}</p>
                   <p className="text-sm text-muted-foreground">
-                    {cls?.name} · Roll {student.roll} · {student.id}
+                    {cls?.name} · Roll {student.roll} · {student.id} · {formatBDT(student.monthlyFee)}/mo
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
