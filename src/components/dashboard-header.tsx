@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { UserPlus, Wallet, LogOut, Bell, Search } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -10,6 +11,13 @@ interface DashboardHeaderProps {
 
 export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
   const navigate = useNavigate();
+  const [query, setQuery] = useState("");
+
+  function onSearch(e: React.FormEvent) {
+    e.preventDefault();
+    const q = query.trim();
+    navigate({ to: "/search", search: { q } });
+  }
 
   return (
     <header className="sticky top-0 z-20 flex flex-wrap items-center gap-4 border-b border-border bg-background/80 px-6 py-4 backdrop-blur">
@@ -20,10 +28,15 @@ export function DashboardHeader({ title, subtitle }: DashboardHeaderProps) {
         ) : null}
       </div>
 
-      <div className="relative hidden lg:block">
+      <form onSubmit={onSearch} className="relative hidden lg:block">
         <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
-        <Input placeholder="Search students…" className="w-56 pl-9" />
-      </div>
+        <Input
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          placeholder="Search students or teachers…"
+          className="w-64 pl-9"
+        />
+      </form>
 
       <div className="flex items-center gap-2">
         <Button variant="outline" size="icon" aria-label="Notifications">
