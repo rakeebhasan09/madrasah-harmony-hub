@@ -69,6 +69,10 @@ const schema = z.object({
   motherMobile: mobile,
   guardianMobile: mobile,
   classId: z.string().min(1, "Select a class"),
+  monthlyFee: z.coerce
+    .number({ message: "Enter the monthly fee" })
+    .min(1, "Enter a valid amount")
+    .max(100000, "Amount too large"),
   gender: z.string().min(1, "Select gender"),
   religion: z.string().min(1, "Select religion"),
   bloodGroup: z.string().min(1, "Select blood group"),
