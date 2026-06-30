@@ -15,10 +15,10 @@ import {
 } from "@/components/ui/table";
 import {
   getClass,
-  studentsByClass,
   formatBDT,
   type ClassId,
 } from "@/lib/madrasah-data";
+import { useStudents } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/class/$classId")({
   head: ({ params }) => {
