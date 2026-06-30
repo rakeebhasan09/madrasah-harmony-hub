@@ -99,8 +99,10 @@ function Overview() {
             </CardHeader>
             <CardContent className="space-y-4">
               {CLASSES.map((cls) => {
-                const count = studentsByClass(cls.id).length;
-                const pct = Math.round((count / totalStudents) * 100);
+                const list = students.filter((s) => s.classId === cls.id);
+                const count = list.length;
+                const pct = totalStudents ? Math.round((count / totalStudents) * 100) : 0;
+                const classFees = list.reduce((sum, s) => sum + s.monthlyFee, 0);
                 return (
                   <Link
                     key={cls.id}
@@ -111,7 +113,7 @@ function Overview() {
                     <div className="mb-1.5 flex items-center justify-between text-sm">
                       <span className="font-medium text-foreground">{cls.name}</span>
                       <span className="text-muted-foreground">
-                        {count} students · {formatBDT(cls.monthlyFee)}/mo
+                        {count} students · {formatBDT(classFees)}/mo
                       </span>
                     </div>
                     <Progress value={pct} />
