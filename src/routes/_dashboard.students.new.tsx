@@ -141,7 +141,18 @@ function RegisterStudent() {
   }
 
   function onSubmit(values: FormValues) {
-    // UI shell only — no backend yet. Show confirmation and return to class.
+    // UI shell only — persists to the in-memory store for this session.
+    addStudent({
+      nameEn: values.nameEn,
+      nameBn: values.nameBn,
+      fatherEn: values.fatherEn,
+      motherEn: values.motherEn,
+      classId: values.classId as ClassId,
+      gender: values.gender,
+      guardianMobile: values.guardianMobile,
+      bloodGroup: values.bloodGroup,
+      monthlyFee: values.monthlyFee,
+    });
     toast.success(`${values.nameEn} registered successfully.`);
     navigate({ to: "/class/$classId", params: { classId: values.classId } });
   }
