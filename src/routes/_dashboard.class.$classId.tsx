@@ -134,6 +134,7 @@ function ClassPage() {
                   <TableHead>Gender</TableHead>
                   <TableHead>Blood</TableHead>
                   <TableHead>Guardian Mobile</TableHead>
+                  <TableHead className="text-right">Monthly Fee</TableHead>
                   <TableHead className="text-right">This Month</TableHead>
                 </TableRow>
               </TableHeader>
