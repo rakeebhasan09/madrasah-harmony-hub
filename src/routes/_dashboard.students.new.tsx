@@ -294,6 +294,22 @@ function RegisterStudent() {
                     <FormMessage />
                   </FormItem>
                 )} />
+                <FormField control={form.control} name="monthlyFee" render={({ field }) => (
+                  <Field label="Monthly Fee (৳)">
+                    <Input
+                      type="number"
+                      inputMode="numeric"
+                      placeholder="Agreed amount, e.g. 800"
+                      value={field.value ?? ""}
+                      onChange={(e) =>
+                        field.onChange(e.target.value === "" ? undefined : Number(e.target.value))
+                      }
+                      onBlur={field.onBlur}
+                      name={field.name}
+                      ref={field.ref}
+                    />
+                  </Field>
+                )} />
                 <FormField control={form.control} name="gender" render={({ field }) => (
                   <FormItem>
                     <FormLabel>Gender</FormLabel>
