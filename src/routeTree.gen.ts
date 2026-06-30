@@ -14,6 +14,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as DashboardIndexRouteImport } from './routes/_dashboard.index'
 import { Route as DashboardTeachersRouteImport } from './routes/_dashboard.teachers'
+import { Route as DashboardSalariesRouteImport } from './routes/_dashboard.salaries'
 import { Route as DashboardFeesRouteImport } from './routes/_dashboard.fees'
 import { Route as DashboardTeachersNewRouteImport } from './routes/_dashboard.teachers.new'
 import { Route as DashboardStudentsNewRouteImport } from './routes/_dashboard.students.new'
@@ -43,6 +44,11 @@ const DashboardTeachersRoute = DashboardTeachersRouteImport.update({
   path: '/teachers',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardSalariesRoute = DashboardSalariesRouteImport.update({
+  id: '/salaries',
+  path: '/salaries',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardFeesRoute = DashboardFeesRouteImport.update({
   id: '/fees',
   path: '/fees',
@@ -69,6 +75,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/fees': typeof DashboardFeesRoute
+  '/salaries': typeof DashboardSalariesRoute
   '/teachers': typeof DashboardTeachersRouteWithChildren
   '/class/$classId': typeof DashboardClassClassIdRoute
   '/students/new': typeof DashboardStudentsNewRoute
@@ -78,6 +85,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/fees': typeof DashboardFeesRoute
+  '/salaries': typeof DashboardSalariesRoute
   '/teachers': typeof DashboardTeachersRouteWithChildren
   '/': typeof DashboardIndexRoute
   '/class/$classId': typeof DashboardClassClassIdRoute
@@ -90,6 +98,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
   '/_dashboard/fees': typeof DashboardFeesRoute
+  '/_dashboard/salaries': typeof DashboardSalariesRoute
   '/_dashboard/teachers': typeof DashboardTeachersRouteWithChildren
   '/_dashboard/': typeof DashboardIndexRoute
   '/_dashboard/class/$classId': typeof DashboardClassClassIdRoute
@@ -103,6 +112,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/fees'
+    | '/salaries'
     | '/teachers'
     | '/class/$classId'
     | '/students/new'
@@ -112,6 +122,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/fees'
+    | '/salaries'
     | '/teachers'
     | '/'
     | '/class/$classId'
@@ -123,6 +134,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/sitemap.xml'
     | '/_dashboard/fees'
+    | '/_dashboard/salaries'
     | '/_dashboard/teachers'
     | '/_dashboard/'
     | '/_dashboard/class/$classId'
@@ -173,6 +185,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardTeachersRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/salaries': {
+      id: '/_dashboard/salaries'
+      path: '/salaries'
+      fullPath: '/salaries'
+      preLoaderRoute: typeof DashboardSalariesRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/fees': {
       id: '/_dashboard/fees'
       path: '/fees'
@@ -217,6 +236,7 @@ const DashboardTeachersRouteWithChildren =
 
 interface DashboardRouteChildren {
   DashboardFeesRoute: typeof DashboardFeesRoute
+  DashboardSalariesRoute: typeof DashboardSalariesRoute
   DashboardTeachersRoute: typeof DashboardTeachersRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardClassClassIdRoute: typeof DashboardClassClassIdRoute
@@ -225,6 +245,7 @@ interface DashboardRouteChildren {
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFeesRoute: DashboardFeesRoute,
+  DashboardSalariesRoute: DashboardSalariesRoute,
   DashboardTeachersRoute: DashboardTeachersRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardClassClassIdRoute: DashboardClassClassIdRoute,
