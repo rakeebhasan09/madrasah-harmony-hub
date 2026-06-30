@@ -14,11 +14,9 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   CLASSES,
-  STUDENTS,
-  TEACHERS,
-  studentsByClass,
   formatBDT,
 } from "@/lib/madrasah-data";
+import { useStudents, useTeachers } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/")({
   head: () => ({
