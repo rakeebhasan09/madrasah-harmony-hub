@@ -37,7 +37,9 @@ import {
   RELIGIONS,
   BLOOD_GROUPS,
   NATIONALITIES,
+  type ClassId,
 } from "@/lib/madrasah-data";
+import { addStudent } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/students/new")({
   head: () => ({
