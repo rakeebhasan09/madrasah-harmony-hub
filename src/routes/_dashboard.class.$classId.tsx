@@ -160,6 +160,7 @@ function ClassPage() {
                       <TableCell>{s.gender}</TableCell>
                       <TableCell>{s.bloodGroup}</TableCell>
                       <TableCell className="tabular-nums">{s.guardianMobile}</TableCell>
+                      <TableCell className="text-right font-medium tabular-nums">{formatBDT(s.monthlyFee)}</TableCell>
                       <TableCell className="text-right">
                         {paid ? (
                           <Badge variant="secondary" className="bg-success/15 text-success">
