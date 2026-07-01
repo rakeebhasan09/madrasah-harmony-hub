@@ -28,7 +28,7 @@ import {
 import { formatBDT, type Teacher } from "@/lib/madrasah-data";
 import { useTeachers, removeTeacher } from "@/lib/madrasah-store";
 
-export const Route = createFileRoute("/_dashboard/teachers")({
+export const Route = createFileRoute("/_dashboard/teachers/")({
   head: () => ({
     meta: [
       { title: "Teachers — Madrasah Management System" },

@@ -13,10 +13,10 @@ import { Route as SitemapDotxmlRouteImport } from './routes/sitemap[.]xml'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as DashboardRouteImport } from './routes/_dashboard'
 import { Route as DashboardIndexRouteImport } from './routes/_dashboard.index'
-import { Route as DashboardTeachersRouteImport } from './routes/_dashboard.teachers'
 import { Route as DashboardSearchRouteImport } from './routes/_dashboard.search'
 import { Route as DashboardSalariesRouteImport } from './routes/_dashboard.salaries'
 import { Route as DashboardFeesRouteImport } from './routes/_dashboard.fees'
+import { Route as DashboardTeachersIndexRouteImport } from './routes/_dashboard.teachers.index'
 import { Route as DashboardTeachersNewRouteImport } from './routes/_dashboard.teachers.new'
 import { Route as DashboardStudentsNewRouteImport } from './routes/_dashboard.students.new'
 import { Route as DashboardClassClassIdRouteImport } from './routes/_dashboard.class.$classId'
@@ -40,11 +40,6 @@ const DashboardIndexRoute = DashboardIndexRouteImport.update({
   path: '/',
   getParentRoute: () => DashboardRoute,
 } as any)
-const DashboardTeachersRoute = DashboardTeachersRouteImport.update({
-  id: '/teachers',
-  path: '/teachers',
-  getParentRoute: () => DashboardRoute,
-} as any)
 const DashboardSearchRoute = DashboardSearchRouteImport.update({
   id: '/search',
   path: '/search',
@@ -60,10 +55,15 @@ const DashboardFeesRoute = DashboardFeesRouteImport.update({
   path: '/fees',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardTeachersIndexRoute = DashboardTeachersIndexRouteImport.update({
+  id: '/teachers/',
+  path: '/teachers/',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardTeachersNewRoute = DashboardTeachersNewRouteImport.update({
-  id: '/new',
-  path: '/new',
-  getParentRoute: () => DashboardTeachersRoute,
+  id: '/teachers/new',
+  path: '/teachers/new',
+  getParentRoute: () => DashboardRoute,
 } as any)
 const DashboardStudentsNewRoute = DashboardStudentsNewRouteImport.update({
   id: '/students/new',
@@ -83,10 +83,10 @@ export interface FileRoutesByFullPath {
   '/fees': typeof DashboardFeesRoute
   '/salaries': typeof DashboardSalariesRoute
   '/search': typeof DashboardSearchRoute
-  '/teachers': typeof DashboardTeachersRouteWithChildren
   '/class/$classId': typeof DashboardClassClassIdRoute
   '/students/new': typeof DashboardStudentsNewRoute
   '/teachers/new': typeof DashboardTeachersNewRoute
+  '/teachers/': typeof DashboardTeachersIndexRoute
 }
 export interface FileRoutesByTo {
   '/login': typeof LoginRoute
@@ -94,11 +94,11 @@ export interface FileRoutesByTo {
   '/fees': typeof DashboardFeesRoute
   '/salaries': typeof DashboardSalariesRoute
   '/search': typeof DashboardSearchRoute
-  '/teachers': typeof DashboardTeachersRouteWithChildren
   '/': typeof DashboardIndexRoute
   '/class/$classId': typeof DashboardClassClassIdRoute
   '/students/new': typeof DashboardStudentsNewRoute
   '/teachers/new': typeof DashboardTeachersNewRoute
+  '/teachers': typeof DashboardTeachersIndexRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -108,11 +108,11 @@ export interface FileRoutesById {
   '/_dashboard/fees': typeof DashboardFeesRoute
   '/_dashboard/salaries': typeof DashboardSalariesRoute
   '/_dashboard/search': typeof DashboardSearchRoute
-  '/_dashboard/teachers': typeof DashboardTeachersRouteWithChildren
   '/_dashboard/': typeof DashboardIndexRoute
   '/_dashboard/class/$classId': typeof DashboardClassClassIdRoute
   '/_dashboard/students/new': typeof DashboardStudentsNewRoute
   '/_dashboard/teachers/new': typeof DashboardTeachersNewRoute
+  '/_dashboard/teachers/': typeof DashboardTeachersIndexRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -123,10 +123,10 @@ export interface FileRouteTypes {
     | '/fees'
     | '/salaries'
     | '/search'
-    | '/teachers'
     | '/class/$classId'
     | '/students/new'
     | '/teachers/new'
+    | '/teachers/'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/login'
@@ -134,11 +134,11 @@ export interface FileRouteTypes {
     | '/fees'
     | '/salaries'
     | '/search'
-    | '/teachers'
     | '/'
     | '/class/$classId'
     | '/students/new'
     | '/teachers/new'
+    | '/teachers'
   id:
     | '__root__'
     | '/_dashboard'
@@ -147,11 +147,11 @@ export interface FileRouteTypes {
     | '/_dashboard/fees'
     | '/_dashboard/salaries'
     | '/_dashboard/search'
-    | '/_dashboard/teachers'
     | '/_dashboard/'
     | '/_dashboard/class/$classId'
     | '/_dashboard/students/new'
     | '/_dashboard/teachers/new'
+    | '/_dashboard/teachers/'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -190,13 +190,6 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardIndexRouteImport
       parentRoute: typeof DashboardRoute
     }
-    '/_dashboard/teachers': {
-      id: '/_dashboard/teachers'
-      path: '/teachers'
-      fullPath: '/teachers'
-      preLoaderRoute: typeof DashboardTeachersRouteImport
-      parentRoute: typeof DashboardRoute
-    }
     '/_dashboard/search': {
       id: '/_dashboard/search'
       path: '/search'
@@ -218,12 +211,19 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFeesRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/teachers/': {
+      id: '/_dashboard/teachers/'
+      path: '/teachers'
+      fullPath: '/teachers/'
+      preLoaderRoute: typeof DashboardTeachersIndexRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/teachers/new': {
       id: '/_dashboard/teachers/new'
-      path: '/new'
+      path: '/teachers/new'
       fullPath: '/teachers/new'
       preLoaderRoute: typeof DashboardTeachersNewRouteImport
-      parentRoute: typeof DashboardTeachersRoute
+      parentRoute: typeof DashboardRoute
     }
     '/_dashboard/students/new': {
       id: '/_dashboard/students/new'
@@ -242,35 +242,26 @@ declare module '@tanstack/react-router' {
   }
 }
 
-interface DashboardTeachersRouteChildren {
-  DashboardTeachersNewRoute: typeof DashboardTeachersNewRoute
-}
-
-const DashboardTeachersRouteChildren: DashboardTeachersRouteChildren = {
-  DashboardTeachersNewRoute: DashboardTeachersNewRoute,
-}
-
-const DashboardTeachersRouteWithChildren =
-  DashboardTeachersRoute._addFileChildren(DashboardTeachersRouteChildren)
-
 interface DashboardRouteChildren {
   DashboardFeesRoute: typeof DashboardFeesRoute
   DashboardSalariesRoute: typeof DashboardSalariesRoute
   DashboardSearchRoute: typeof DashboardSearchRoute
-  DashboardTeachersRoute: typeof DashboardTeachersRouteWithChildren
   DashboardIndexRoute: typeof DashboardIndexRoute
   DashboardClassClassIdRoute: typeof DashboardClassClassIdRoute
   DashboardStudentsNewRoute: typeof DashboardStudentsNewRoute
+  DashboardTeachersNewRoute: typeof DashboardTeachersNewRoute
+  DashboardTeachersIndexRoute: typeof DashboardTeachersIndexRoute
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
   DashboardFeesRoute: DashboardFeesRoute,
   DashboardSalariesRoute: DashboardSalariesRoute,
   DashboardSearchRoute: DashboardSearchRoute,
-  DashboardTeachersRoute: DashboardTeachersRouteWithChildren,
   DashboardIndexRoute: DashboardIndexRoute,
   DashboardClassClassIdRoute: DashboardClassClassIdRoute,
   DashboardStudentsNewRoute: DashboardStudentsNewRoute,
+  DashboardTeachersNewRoute: DashboardTeachersNewRoute,
+  DashboardTeachersIndexRoute: DashboardTeachersIndexRoute,
 }
 
 const DashboardRouteWithChildren = DashboardRoute._addFileChildren(
@@ -285,13 +276,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
