@@ -14,7 +14,114 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      students: {
+        Row: {
+          birth_cert: string
+          blood_group: string
+          class_id: string
+          created_at: string
+          dob: string | null
+          father_bn: string
+          father_en: string
+          father_mobile: string
+          gender: string
+          guardian_mobile: string
+          id: string
+          monthly_fee: number
+          mother_bn: string
+          mother_en: string
+          mother_mobile: string
+          name_bn: string
+          name_en: string
+          nationality: string
+          paid_months: number[]
+          permanent_address: string
+          present_address: string
+          religion: string
+        }
+        Insert: {
+          birth_cert?: string
+          blood_group?: string
+          class_id: string
+          created_at?: string
+          dob?: string | null
+          father_bn?: string
+          father_en?: string
+          father_mobile?: string
+          gender?: string
+          guardian_mobile?: string
+          id?: string
+          monthly_fee?: number
+          mother_bn?: string
+          mother_en?: string
+          mother_mobile?: string
+          name_bn?: string
+          name_en: string
+          nationality?: string
+          paid_months?: number[]
+          permanent_address?: string
+          present_address?: string
+          religion?: string
+        }
+        Update: {
+          birth_cert?: string
+          blood_group?: string
+          class_id?: string
+          created_at?: string
+          dob?: string | null
+          father_bn?: string
+          father_en?: string
+          father_mobile?: string
+          gender?: string
+          guardian_mobile?: string
+          id?: string
+          monthly_fee?: number
+          mother_bn?: string
+          mother_en?: string
+          mother_mobile?: string
+          name_bn?: string
+          name_en?: string
+          nationality?: string
+          paid_months?: number[]
+          permanent_address?: string
+          present_address?: string
+          religion?: string
+        }
+        Relationships: []
+      }
+      teachers: {
+        Row: {
+          created_at: string
+          id: string
+          joined: string | null
+          mobile: string
+          name: string
+          paid_months: number[]
+          salary: number
+          subject: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          joined?: string | null
+          mobile?: string
+          name: string
+          paid_months?: number[]
+          salary?: number
+          subject?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          joined?: string | null
+          mobile?: string
+          name?: string
+          paid_months?: number[]
+          salary?: number
+          subject?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
