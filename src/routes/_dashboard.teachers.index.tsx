@@ -54,10 +54,14 @@ function TeachersPage() {
   const [pending, setPending] = useState<Teacher | null>(null);
   const salaryTotal = teachers.reduce((s, t) => s + t.salary, 0);
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (!pending) return;
-    removeTeacher(pending.id);
-    toast.success(`${pending.name} removed.`);
+    try {
+      await removeTeacher(pending.id);
+      toast.success(`${pending.name} removed.`);
+    } catch {
+      toast.error("Could not remove the teacher. Please try again.");
+    }
     setPending(null);
   }
 
