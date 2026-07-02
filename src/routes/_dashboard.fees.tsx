@@ -54,13 +54,17 @@ function FeesPage() {
   const alreadyPaid = monthIdx >= 0 && paidMonths.includes(monthIdx);
   const canRecord = !!student && monthIdx >= 0 && !alreadyPaid;
 
-  function record() {
+  async function record() {
     if (!student || monthIdx < 0) return;
-    recordStudentPayment(student.id, monthIdx);
-    toast.success(
-      `Recorded ${formatBDT(student.monthlyFee)} for ${student.nameEn} — ${MONTHS[monthIdx]}`,
-    );
-    setMonth("");
+    try {
+      await recordStudentPayment(student.id, monthIdx);
+      toast.success(
+        `Recorded ${formatBDT(student.monthlyFee)} for ${student.nameEn} — ${MONTHS[monthIdx]}`,
+      );
+      setMonth("");
+    } catch {
+      toast.error("Could not record the payment. Please try again.");
+    }
   }
 
   return (
