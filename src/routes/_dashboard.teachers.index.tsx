@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { formatBDT, type Teacher } from "@/lib/madrasah-data";
+import { formatBDT, shortId, type Teacher } from "@/lib/madrasah-data";
 import { useTeachers, removeTeacher } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/teachers/")({
@@ -138,7 +138,7 @@ function TeachersPage() {
                           </Avatar>
                           <div>
                             <p className="font-medium text-foreground">{t.name}</p>
-                            <p className="text-xs text-muted-foreground">{t.id}</p>
+                            <p className="text-xs text-muted-foreground">{shortId(t.id)}</p>
                           </div>
                         </div>
                       </TableCell>

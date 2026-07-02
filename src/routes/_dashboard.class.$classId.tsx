@@ -153,7 +153,7 @@ function ClassPage() {
                           </Avatar>
                           <div>
                             <p className="font-medium text-foreground">{s.nameEn}</p>
-                            <p className="text-xs text-muted-foreground">{s.id}</p>
+                            <p className="text-xs text-muted-foreground">{shortId(s.id)}</p>
                           </div>
                         </div>
                       </TableCell>
