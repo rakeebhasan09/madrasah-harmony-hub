@@ -1,17 +1,12 @@
-// Reactive in-memory store for the UI shell (no backend yet).
-// Lets registrations, deletions, payments and search reflect across all pages
-// during the current session.
+// Backend-connected store for the Madrasah Management System.
+// Reads/writes students & teachers from Lovable Cloud (Supabase) and keeps a
+// reactive in-memory cache so all pages update after any CRUD operation.
 import { useSyncExternalStore } from "react";
-import {
-  STUDENTS,
-  TEACHERS,
-  type ClassId,
-  type Student,
-  type Teacher,
-} from "./madrasah-data";
+import { supabase } from "@/integrations/supabase/client";
+import { type ClassId, type Student, type Teacher } from "./madrasah-data";
 
-let students: Student[] = [...STUDENTS];
-let teachers: Teacher[] = [...TEACHERS];
+let students: Student[] = [];
+let teachers: Teacher[] = [];
 
 const listeners = new Set<() => void>();
 
@@ -23,6 +18,105 @@ function subscribe(listener: () => void) {
   listeners.add(listener);
   return () => listeners.delete(listener);
 }
+
+// ---- Mapping helpers -------------------------------------------------------
+
+type StudentRow = {
+  id: string;
+  name_en: string;
+  name_bn: string;
+  father_en: string;
+  mother_en: string;
+  class_id: string;
+  gender: string;
+  guardian_mobile: string;
+  blood_group: string;
+  monthly_fee: number;
+  paid_months: number[] | null;
+};
+
+type TeacherRow = {
+  id: string;
+  name: string;
+  subject: string;
+  mobile: string;
+  salary: number;
+  joined: string | null;
+  paid_months: number[] | null;
+};
+
+function mapStudent(row: StudentRow, roll: number): Student {
+  return {
+    id: row.id,
+    roll,
+    nameEn: row.name_en,
+    nameBn: row.name_bn,
+    fatherEn: row.father_en,
+    motherEn: row.mother_en,
+    classId: row.class_id as ClassId,
+    gender: row.gender,
+    guardianMobile: row.guardian_mobile,
+    bloodGroup: row.blood_group,
+    monthlyFee: row.monthly_fee,
+    paidMonths: row.paid_months ?? [],
+  };
+}
+
+function mapTeacher(row: TeacherRow): Teacher {
+  return {
+    id: row.id,
+    name: row.name,
+    subject: row.subject,
+    mobile: row.mobile,
+    salary: row.salary,
+    joined: row.joined ?? "",
+    paidMonths: row.paid_months ?? [],
+  };
+}
+
+// ---- Loaders (newest first for display) ------------------------------------
+
+async function loadStudents() {
+  const { data, error } = await supabase
+    .from("students")
+    .select("*")
+    .order("created_at", { ascending: true });
+  if (error) {
+    console.error("Failed to load students", error);
+    return;
+  }
+  // Assign per-class roll numbers by admission order (oldest = 1),
+  // then store newest-first for display.
+  const perClass: Record<string, number> = {};
+  const mapped = (data ?? []).map((row) => {
+    const classId = (row as StudentRow).class_id;
+    perClass[classId] = (perClass[classId] ?? 0) + 1;
+    return mapStudent(row as StudentRow, perClass[classId]);
+  });
+  students = mapped.reverse();
+  emit();
+}
+
+async function loadTeachers() {
+  const { data, error } = await supabase
+    .from("teachers")
+    .select("*")
+    .order("created_at", { ascending: false });
+  if (error) {
+    console.error("Failed to load teachers", error);
+    return;
+  }
+  teachers = (data ?? []).map((row) => mapTeacher(row as TeacherRow));
+  emit();
+}
+
+// Kick off the initial load once, on the client only.
+if (typeof window !== "undefined") {
+  void loadStudents();
+  void loadTeachers();
+}
+
+// ---- Hooks -----------------------------------------------------------------
 
 export function useStudents(): Student[] {
   return useSyncExternalStore(
@@ -40,30 +134,54 @@ export function useTeachers(): Teacher[] {
   );
 }
 
+// ---- Mutations -------------------------------------------------------------
+
 export interface NewStudentInput {
   nameEn: string;
   nameBn: string;
   fatherEn: string;
+  fatherBn: string;
   motherEn: string;
+  motherBn: string;
+  dob?: string;
+  birthCert: string;
   classId: ClassId;
   gender: string;
-  guardianMobile: string;
+  religion: string;
   bloodGroup: string;
+  nationality: string;
+  fatherMobile: string;
+  motherMobile: string;
+  guardianMobile: string;
+  presentAddress: string;
+  permanentAddress: string;
   monthlyFee: number;
 }
 
-export function addStudent(input: NewStudentInput): Student {
-  const classCount = students.filter((s) => s.classId === input.classId).length;
-  const nextNum = students.length + 1;
-  const student: Student = {
-    id: `STD-${String(1000 + nextNum)}`,
-    roll: classCount + 1,
-    paidMonths: [],
-    ...input,
-  };
-  students = [...students, student];
-  emit();
-  return student;
+export async function addStudent(input: NewStudentInput): Promise<void> {
+  const { error } = await supabase.from("students").insert({
+    name_en: input.nameEn,
+    name_bn: input.nameBn,
+    father_en: input.fatherEn,
+    father_bn: input.fatherBn,
+    mother_en: input.motherEn,
+    mother_bn: input.motherBn,
+    dob: input.dob ?? null,
+    birth_cert: input.birthCert,
+    class_id: input.classId,
+    gender: input.gender,
+    religion: input.religion,
+    blood_group: input.bloodGroup,
+    nationality: input.nationality,
+    father_mobile: input.fatherMobile,
+    mother_mobile: input.motherMobile,
+    guardian_mobile: input.guardianMobile,
+    present_address: input.presentAddress,
+    permanent_address: input.permanentAddress,
+    monthly_fee: input.monthlyFee,
+  });
+  if (error) throw error;
+  await loadStudents();
 }
 
 export interface NewTeacherInput {
@@ -74,37 +192,46 @@ export interface NewTeacherInput {
   joined: string;
 }
 
-export function addTeacher(input: NewTeacherInput): Teacher {
-  const nextNum = teachers.length + 1;
-  const teacher: Teacher = {
-    id: `TCH-${String(nextNum).padStart(2, "0")}`,
-    paidMonths: [],
-    ...input,
-  };
-  teachers = [...teachers, teacher];
-  emit();
-  return teacher;
+export async function addTeacher(input: NewTeacherInput): Promise<void> {
+  const { error } = await supabase.from("teachers").insert({
+    name: input.name,
+    subject: input.subject,
+    mobile: input.mobile,
+    salary: input.salary,
+    joined: input.joined,
+  });
+  if (error) throw error;
+  await loadTeachers();
 }
 
-export function removeTeacher(id: string) {
-  teachers = teachers.filter((t) => t.id !== id);
-  emit();
+export async function removeTeacher(id: string): Promise<void> {
+  const { error } = await supabase.from("teachers").delete().eq("id", id);
+  if (error) throw error;
+  await loadTeachers();
 }
 
-export function recordStudentPayment(studentId: string, month: number) {
-  students = students.map((s) =>
-    s.id === studentId
-      ? { ...s, paidMonths: Array.from(new Set([...s.paidMonths, month])).sort((a, b) => a - b) }
-      : s,
+export async function recordStudentPayment(studentId: string, month: number): Promise<void> {
+  const current = students.find((s) => s.id === studentId);
+  const months = Array.from(new Set([...(current?.paidMonths ?? []), month])).sort(
+    (a, b) => a - b,
   );
-  emit();
+  const { error } = await supabase
+    .from("students")
+    .update({ paid_months: months })
+    .eq("id", studentId);
+  if (error) throw error;
+  await loadStudents();
 }
 
-export function recordSalaryPayment(teacherId: string, month: number) {
-  teachers = teachers.map((t) =>
-    t.id === teacherId
-      ? { ...t, paidMonths: Array.from(new Set([...t.paidMonths, month])).sort((a, b) => a - b) }
-      : t,
+export async function recordSalaryPayment(teacherId: string, month: number): Promise<void> {
+  const current = teachers.find((t) => t.id === teacherId);
+  const months = Array.from(new Set([...(current?.paidMonths ?? []), month])).sort(
+    (a, b) => a - b,
   );
-  emit();
+  const { error } = await supabase
+    .from("teachers")
+    .update({ paid_months: months })
+    .eq("id", teacherId);
+  if (error) throw error;
+  await loadTeachers();
 }

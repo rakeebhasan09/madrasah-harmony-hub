@@ -19,6 +19,7 @@ import {
   MONTHS,
   getClass,
   formatBDT,
+  shortId,
   type ClassId,
 } from "@/lib/madrasah-data";
 import { useStudents, recordStudentPayment } from "@/lib/madrasah-store";
@@ -54,13 +55,17 @@ function FeesPage() {
   const alreadyPaid = monthIdx >= 0 && paidMonths.includes(monthIdx);
   const canRecord = !!student && monthIdx >= 0 && !alreadyPaid;
 
-  function record() {
+  async function record() {
     if (!student || monthIdx < 0) return;
-    recordStudentPayment(student.id, monthIdx);
-    toast.success(
-      `Recorded ${formatBDT(student.monthlyFee)} for ${student.nameEn} — ${MONTHS[monthIdx]}`,
-    );
-    setMonth("");
+    try {
+      await recordStudentPayment(student.id, monthIdx);
+      toast.success(
+        `Recorded ${formatBDT(student.monthlyFee)} for ${student.nameEn} — ${MONTHS[monthIdx]}`,
+      );
+      setMonth("");
+    } catch {
+      toast.error("Could not record the payment. Please try again.");
+    }
   }
 
   return (
@@ -152,7 +157,7 @@ function FeesPage() {
                 <div>
                   <p className="font-medium text-foreground">{student.nameEn}</p>
                   <p className="text-sm text-muted-foreground">
-                    {cls?.name} · Roll {student.roll} · {student.id} · {formatBDT(student.monthlyFee)}/mo
+                    {cls?.name} · Roll {student.roll} · {shortId(student.id)} · {formatBDT(student.monthlyFee)}/mo
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">

@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { formatBDT, type Teacher } from "@/lib/madrasah-data";
+import { formatBDT, shortId, type Teacher } from "@/lib/madrasah-data";
 import { useTeachers, removeTeacher } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/teachers/")({
@@ -54,10 +54,14 @@ function TeachersPage() {
   const [pending, setPending] = useState<Teacher | null>(null);
   const salaryTotal = teachers.reduce((s, t) => s + t.salary, 0);
 
-  function confirmDelete() {
+  async function confirmDelete() {
     if (!pending) return;
-    removeTeacher(pending.id);
-    toast.success(`${pending.name} removed.`);
+    try {
+      await removeTeacher(pending.id);
+      toast.success(`${pending.name} removed.`);
+    } catch {
+      toast.error("Could not remove the teacher. Please try again.");
+    }
     setPending(null);
   }
 
@@ -134,7 +138,7 @@ function TeachersPage() {
                           </Avatar>
                           <div>
                             <p className="font-medium text-foreground">{t.name}</p>
-                            <p className="text-xs text-muted-foreground">{t.id}</p>
+                            <p className="text-xs text-muted-foreground">{shortId(t.id)}</p>
                           </div>
                         </div>
                       </TableCell>

@@ -140,21 +140,34 @@ function RegisterStudent() {
     reader.readAsDataURL(file);
   }
 
-  function onSubmit(values: FormValues) {
-    // UI shell only — persists to the in-memory store for this session.
-    addStudent({
-      nameEn: values.nameEn,
-      nameBn: values.nameBn,
-      fatherEn: values.fatherEn,
-      motherEn: values.motherEn,
-      classId: values.classId as ClassId,
-      gender: values.gender,
-      guardianMobile: values.guardianMobile,
-      bloodGroup: values.bloodGroup,
-      monthlyFee: values.monthlyFee,
-    });
-    toast.success(`${values.nameEn} registered successfully.`);
-    navigate({ to: "/class/$classId", params: { classId: values.classId } });
+  async function onSubmit(values: FormValues) {
+    try {
+      await addStudent({
+        nameEn: values.nameEn,
+        nameBn: values.nameBn,
+        fatherEn: values.fatherEn,
+        fatherBn: values.fatherBn,
+        motherEn: values.motherEn,
+        motherBn: values.motherBn,
+        dob: format(values.dob, "yyyy-MM-dd"),
+        birthCert: values.birthCert,
+        classId: values.classId as ClassId,
+        gender: values.gender,
+        religion: values.religion,
+        bloodGroup: values.bloodGroup,
+        nationality: values.nationality,
+        fatherMobile: values.fatherMobile,
+        motherMobile: values.motherMobile,
+        guardianMobile: values.guardianMobile,
+        presentAddress: values.presentAddress,
+        permanentAddress: values.permanentAddress,
+        monthlyFee: values.monthlyFee,
+      });
+      toast.success(`${values.nameEn} registered successfully.`);
+      navigate({ to: "/class/$classId", params: { classId: values.classId } });
+    } catch {
+      toast.error("Could not register the student. Please try again.");
+    }
   }
 
   return (

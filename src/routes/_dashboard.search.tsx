@@ -7,7 +7,7 @@ import { DashboardHeader } from "@/components/dashboard-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { getClass, formatBDT } from "@/lib/madrasah-data";
+import { getClass, formatBDT, shortId } from "@/lib/madrasah-data";
 import { useStudents, useTeachers } from "@/lib/madrasah-store";
 
 const searchSchema = z.object({
@@ -107,7 +107,7 @@ function SearchPage() {
                         <div className="min-w-0 flex-1">
                           <p className="truncate font-medium text-foreground">{s.nameEn}</p>
                           <p className="truncate text-xs text-muted-foreground">
-                            {s.id} · {s.guardianMobile}
+                            {shortId(s.id)} · {s.guardianMobile}
                           </p>
                         </div>
                         <div className="text-right">
@@ -145,7 +145,7 @@ function SearchPage() {
                       <div className="min-w-0 flex-1">
                         <p className="truncate font-medium text-foreground">{t.name}</p>
                         <p className="truncate text-xs text-muted-foreground">
-                          {t.id} · {t.mobile}
+                          {shortId(t.id)} · {t.mobile}
                         </p>
                       </div>
                       <Badge variant="secondary">{t.subject}</Badge>
