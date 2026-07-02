@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { MONTHS, formatBDT } from "@/lib/madrasah-data";
+import { MONTHS, formatBDT, shortId } from "@/lib/madrasah-data";
 import { useTeachers, recordSalaryPayment } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/salaries")({
@@ -122,7 +122,7 @@ function SalariesPage() {
                 <div>
                   <p className="font-medium text-foreground">{teacher.name}</p>
                   <p className="text-sm text-muted-foreground">
-                    {teacher.subject} · {teacher.id} · {formatBDT(teacher.salary)}/mo
+                    {teacher.subject} · {shortId(teacher.id)} · {formatBDT(teacher.salary)}/mo
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">

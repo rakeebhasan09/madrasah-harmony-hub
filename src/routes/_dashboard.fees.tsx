@@ -19,6 +19,7 @@ import {
   MONTHS,
   getClass,
   formatBDT,
+  shortId,
   type ClassId,
 } from "@/lib/madrasah-data";
 import { useStudents, recordStudentPayment } from "@/lib/madrasah-store";
@@ -156,7 +157,7 @@ function FeesPage() {
                 <div>
                   <p className="font-medium text-foreground">{student.nameEn}</p>
                   <p className="text-sm text-muted-foreground">
-                    {cls?.name} · Roll {student.roll} · {student.id} · {formatBDT(student.monthlyFee)}/mo
+                    {cls?.name} · Roll {student.roll} · {shortId(student.id)} · {formatBDT(student.monthlyFee)}/mo
                   </p>
                 </div>
                 <div className="grid grid-cols-2 gap-2">
