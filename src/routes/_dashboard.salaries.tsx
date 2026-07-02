@@ -42,13 +42,17 @@ function SalariesPage() {
   const alreadyPaid = monthIdx >= 0 && paidMonths.includes(monthIdx);
   const canRecord = !!teacher && monthIdx >= 0 && !alreadyPaid;
 
-  function record() {
+  async function record() {
     if (!teacher || monthIdx < 0) return;
-    recordSalaryPayment(teacher.id, monthIdx);
-    toast.success(
-      `Recorded ${formatBDT(teacher.salary)} salary for ${teacher.name} — ${MONTHS[monthIdx]}`,
-    );
-    setMonth("");
+    try {
+      await recordSalaryPayment(teacher.id, monthIdx);
+      toast.success(
+        `Recorded ${formatBDT(teacher.salary)} salary for ${teacher.name} — ${MONTHS[monthIdx]}`,
+      );
+      setMonth("");
+    } catch {
+      toast.error("Could not record the payment. Please try again.");
+    }
   }
 
   return (
