@@ -81,3 +81,8 @@ export interface Teacher {
 export function formatBDT(amount: number): string {
   return "৳" + amount.toLocaleString("en-BD");
 }
+
+// Friendly short code derived from a record's UUID (for display only).
+export function shortId(id: string): string {
+  return "#" + id.slice(0, 8).toUpperCase();
+}
