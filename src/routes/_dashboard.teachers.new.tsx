@@ -61,16 +61,20 @@ function RegisterTeacher() {
     },
   });
 
-  function onSubmit(values: FormValues) {
-    addTeacher({
-      name: values.name,
-      subject: values.subject,
-      mobile: values.mobile,
-      salary: values.salary,
-      joined: format(values.joined, "yyyy-MM-dd"),
-    });
-    toast.success(`${values.name} registered successfully.`);
-    navigate({ to: "/teachers" });
+  async function onSubmit(values: FormValues) {
+    try {
+      await addTeacher({
+        name: values.name,
+        subject: values.subject,
+        mobile: values.mobile,
+        salary: values.salary,
+        joined: format(values.joined, "yyyy-MM-dd"),
+      });
+      toast.success(`${values.name} registered successfully.`);
+      navigate({ to: "/teachers" });
+    } catch {
+      toast.error("Could not register the teacher. Please try again.");
+    }
   }
 
   return (
