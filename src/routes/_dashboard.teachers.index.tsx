@@ -125,7 +125,14 @@ function TeachersPage() {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {teachers.map((t) => {
+                {teachers.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={7} className="py-12 text-center text-muted-foreground">
+                      No data found. No teachers have been added yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  teachers.map((t) => {
                   const paid = t.paidMonths.includes(CURRENT_MONTH);
                   return (
                     <TableRow key={t.id}>
@@ -182,8 +189,9 @@ function TeachersPage() {
                         </Button>
                       </TableCell>
                     </TableRow>
-                  );
-                })}
+                      );
+                    })
+                )}
               </TableBody>
             </Table>
           </div>

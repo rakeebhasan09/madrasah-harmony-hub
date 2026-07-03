@@ -36,6 +36,7 @@ export type Database = {
           nationality: string
           paid_months: number[]
           permanent_address: string
+          photo_url: string
           present_address: string
           religion: string
         }
@@ -60,6 +61,7 @@ export type Database = {
           nationality?: string
           paid_months?: number[]
           permanent_address?: string
+          photo_url?: string
           present_address?: string
           religion?: string
         }
@@ -84,6 +86,7 @@ export type Database = {
           nationality?: string
           paid_months?: number[]
           permanent_address?: string
+          photo_url?: string
           present_address?: string
           religion?: string
         }

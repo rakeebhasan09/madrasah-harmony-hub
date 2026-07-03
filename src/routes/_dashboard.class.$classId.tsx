@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle } from "lucide-react";
+import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle, Eye, Pencil } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { StudentViewDialog, StudentEditDialog } from "@/components/student-dialogs";
 import {
   Table,
   TableBody,
@@ -18,6 +20,7 @@ import {
   formatBDT,
   shortId,
   type ClassId,
+  type Student,
 } from "@/lib/madrasah-data";
 import { useStudents } from "@/lib/madrasah-store";
 
@@ -63,6 +66,9 @@ function ClassPage() {
   const students = allStudents.filter((s) => s.classId === (cls.id as ClassId));
   const paidCount = students.filter((s) => s.paidMonths.includes(CURRENT_MONTH)).length;
   const monthlyTotal = students.reduce((sum, s) => sum + s.monthlyFee, 0);
+
+  const [viewStudent, setViewStudent] = useState<Student | null>(null);
+  const [editStudent, setEditStudent] = useState<Student | null>(null);
 
   return (
     <div>
@@ -137,50 +143,89 @@ function ClassPage() {
                   <TableHead>Guardian Mobile</TableHead>
                   <TableHead className="text-right">Monthly Fee</TableHead>
                   <TableHead className="text-right">This Month</TableHead>
+                  <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {students.map((s) => {
-                  const paid = s.paidMonths.includes(CURRENT_MONTH);
-                  return (
-                    <TableRow key={s.id}>
-                      <TableCell className="text-muted-foreground">{s.roll}</TableCell>
-                      <TableCell>
-                        <div className="flex items-center gap-3">
-                          <Avatar className="h-9 w-9">
-                            <AvatarFallback className="bg-accent text-xs text-accent-foreground">
-                              {initials(s.nameEn)}
-                            </AvatarFallback>
-                          </Avatar>
-                          <div>
-                            <p className="font-medium text-foreground">{s.nameEn}</p>
-                            <p className="text-xs text-muted-foreground">{shortId(s.id)}</p>
+                {students.length === 0 ? (
+                  <TableRow>
+                    <TableCell colSpan={8} className="py-12 text-center text-muted-foreground">
+                      No data found. No students are enrolled in this class yet.
+                    </TableCell>
+                  </TableRow>
+                ) : (
+                  students.map((s) => {
+                    const paid = s.paidMonths.includes(CURRENT_MONTH);
+                    return (
+                      <TableRow key={s.id}>
+                        <TableCell className="text-muted-foreground">{s.roll}</TableCell>
+                        <TableCell>
+                          <div className="flex items-center gap-3">
+                            <Avatar className="h-9 w-9">
+                              {s.photoUrl ? <AvatarImage src={s.photoUrl} alt={s.nameEn} /> : null}
+                              <AvatarFallback className="bg-accent text-xs text-accent-foreground">
+                                {initials(s.nameEn)}
+                              </AvatarFallback>
+                            </Avatar>
+                            <div>
+                              <p className="font-medium text-foreground">{s.nameEn}</p>
+                              <p className="text-xs text-muted-foreground">{shortId(s.id)}</p>
+                            </div>
                           </div>
-                        </div>
-                      </TableCell>
-                      <TableCell>{s.gender}</TableCell>
-                      <TableCell>{s.bloodGroup}</TableCell>
-                      <TableCell className="tabular-nums">{s.guardianMobile}</TableCell>
-                      <TableCell className="text-right font-medium tabular-nums">{formatBDT(s.monthlyFee)}</TableCell>
-                      <TableCell className="text-right">
-                        {paid ? (
-                          <Badge variant="secondary" className="bg-success/15 text-success">
-                            Paid
-                          </Badge>
-                        ) : (
-                          <Badge variant="secondary" className="bg-destructive/15 text-destructive">
-                            Due
-                          </Badge>
-                        )}
-                      </TableCell>
-                    </TableRow>
-                  );
-                })}
+                        </TableCell>
+                        <TableCell>{s.gender}</TableCell>
+                        <TableCell>{s.bloodGroup}</TableCell>
+                        <TableCell className="tabular-nums">{s.guardianMobile}</TableCell>
+                        <TableCell className="text-right font-medium tabular-nums">{formatBDT(s.monthlyFee)}</TableCell>
+                        <TableCell className="text-right">
+                          {paid ? (
+                            <Badge variant="secondary" className="bg-success/15 text-success">
+                              Paid
+                            </Badge>
+                          ) : (
+                            <Badge variant="secondary" className="bg-destructive/15 text-destructive">
+                              Due
+                            </Badge>
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          <div className="flex justify-end gap-1">
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => setViewStudent(s)}
+                            >
+                              <Eye className="h-4 w-4" /> View
+                            </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              onClick={() => setEditStudent(s)}
+                            >
+                              <Pencil className="h-4 w-4" /> Edit
+                            </Button>
+                          </div>
+                        </TableCell>
+                      </TableRow>
+                    );
+                  })
+                )}
               </TableBody>
             </Table>
           </div>
         </Card>
       </div>
+
+      <StudentViewDialog
+        student={viewStudent}
+        open={!!viewStudent}
+        onOpenChange={(open) => !open && setViewStudent(null)}
+      />
+      <StudentEditDialog
+        student={editStudent}
+        open={!!editStudent}
+        onOpenChange={(open) => !open && setEditStudent(null)}
+      />
     </div>
   );
 }

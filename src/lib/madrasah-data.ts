@@ -56,11 +56,23 @@ export interface Student {
   nameEn: string;
   nameBn: string;
   fatherEn: string;
+  fatherBn: string;
   motherEn: string;
+  motherBn: string;
+  dob: string;
+  birthCert: string;
   classId: ClassId;
   gender: string;
+  religion: string;
+  nationality: string;
+  fatherMobile: string;
+  motherMobile: string;
   guardianMobile: string;
+  presentAddress: string;
+  permanentAddress: string;
   bloodGroup: string;
+  // Data URL / link to the student's profile photo (empty when none).
+  photoUrl: string;
   // Individually agreed monthly fee, set at admission time.
   monthlyFee: number;
   // Months (index 0-11) that have been paid this year.
