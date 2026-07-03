@@ -20,6 +20,7 @@ import {
   formatBDT,
   shortId,
   type ClassId,
+  type Student,
 } from "@/lib/madrasah-data";
 import { useStudents } from "@/lib/madrasah-store";
 
