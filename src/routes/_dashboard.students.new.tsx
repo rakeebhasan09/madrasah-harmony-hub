@@ -162,6 +162,7 @@ function RegisterStudent() {
         presentAddress: values.presentAddress,
         permanentAddress: values.permanentAddress,
         monthlyFee: values.monthlyFee,
+        photoUrl: photo ?? undefined,
       });
       toast.success(`${values.nameEn} registered successfully.`);
       navigate({ to: "/class/$classId", params: { classId: values.classId } });
