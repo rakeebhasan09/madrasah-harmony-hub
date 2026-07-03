@@ -189,8 +189,9 @@ function TeachersPage() {
                         </Button>
                       </TableCell>
                     </TableRow>
-                  );
-                })}
+                      );
+                    })
+                )}
               </TableBody>
             </Table>
           </div>
