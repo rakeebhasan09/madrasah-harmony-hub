@@ -67,6 +67,9 @@ function ClassPage() {
   const paidCount = students.filter((s) => s.paidMonths.includes(CURRENT_MONTH)).length;
   const monthlyTotal = students.reduce((sum, s) => sum + s.monthlyFee, 0);
 
+  const [viewStudent, setViewStudent] = useState<Student | null>(null);
+  const [editStudent, setEditStudent] = useState<Student | null>(null);
+
   return (
     <div>
       <DashboardHeader
