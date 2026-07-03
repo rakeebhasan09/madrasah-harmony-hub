@@ -1,10 +1,12 @@
+import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle } from "lucide-react";
+import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle, Eye, Pencil } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { StudentViewDialog, StudentEditDialog } from "@/components/student-dialogs";
 import {
   Table,
   TableBody,
