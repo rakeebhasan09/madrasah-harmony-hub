@@ -178,6 +178,7 @@ export interface NewStudentInput {
   presentAddress: string;
   permanentAddress: string;
   monthlyFee: number;
+  photoUrl?: string;
 }
 
 export async function addStudent(input: NewStudentInput): Promise<void> {
@@ -201,7 +202,38 @@ export async function addStudent(input: NewStudentInput): Promise<void> {
     present_address: input.presentAddress,
     permanent_address: input.permanentAddress,
     monthly_fee: input.monthlyFee,
+    photo_url: input.photoUrl ?? "",
   });
+  if (error) throw error;
+  await loadStudents();
+}
+
+export async function updateStudent(id: string, input: NewStudentInput): Promise<void> {
+  const { error } = await supabase
+    .from("students")
+    .update({
+      name_en: input.nameEn,
+      name_bn: input.nameBn,
+      father_en: input.fatherEn,
+      father_bn: input.fatherBn,
+      mother_en: input.motherEn,
+      mother_bn: input.motherBn,
+      dob: input.dob ?? null,
+      birth_cert: input.birthCert,
+      class_id: input.classId,
+      gender: input.gender,
+      religion: input.religion,
+      blood_group: input.bloodGroup,
+      nationality: input.nationality,
+      father_mobile: input.fatherMobile,
+      mother_mobile: input.motherMobile,
+      guardian_mobile: input.guardianMobile,
+      present_address: input.presentAddress,
+      permanent_address: input.permanentAddress,
+      monthly_fee: input.monthlyFee,
+      photo_url: input.photoUrl ?? "",
+    })
+    .eq("id", id);
   if (error) throw error;
   await loadStudents();
 }
