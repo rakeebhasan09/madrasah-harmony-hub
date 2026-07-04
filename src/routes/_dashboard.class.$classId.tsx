@@ -19,6 +19,7 @@ import {
   getClass,
   formatBDT,
   shortId,
+  CURRENT_MONTH,
   type ClassId,
   type Student,
 } from "@/lib/madrasah-data";
@@ -49,7 +50,8 @@ export const Route = createFileRoute("/_dashboard/class/$classId")({
   ),
 });
 
-const CURRENT_MONTH = 5; // June in the mock dataset
+
+
 
 function initials(name: string) {
   return name
