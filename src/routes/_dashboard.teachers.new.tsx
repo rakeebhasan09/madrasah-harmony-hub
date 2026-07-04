@@ -1,9 +1,10 @@
+import { useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, UserPlus } from "lucide-react";
+import { CalendarIcon, Upload, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { DashboardHeader } from "@/components/dashboard-header";
@@ -51,6 +52,8 @@ type FormValues = z.infer<typeof schema>;
 
 function RegisterTeacher() {
   const navigate = useNavigate();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -61,6 +64,18 @@ function RegisterTeacher() {
     },
   });
 
+  function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setPhoto(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
   async function onSubmit(values: FormValues) {
     try {
       await addTeacher({
@@ -69,6 +84,7 @@ function RegisterTeacher() {
         mobile: values.mobile,
         salary: values.salary,
         joined: format(values.joined, "yyyy-MM-dd"),
+        photoUrl: photo ?? undefined,
       });
       toast.success(`${values.name} registered successfully.`);
       navigate({ to: "/teachers" });
