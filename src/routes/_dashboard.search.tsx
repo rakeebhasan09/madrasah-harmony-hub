@@ -6,7 +6,7 @@ import { Search as SearchIcon, Users, GraduationCap } from "lucide-react";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { getClass, formatBDT, shortId } from "@/lib/madrasah-data";
 import { useStudents, useTeachers } from "@/lib/madrasah-store";
 
@@ -100,6 +100,7 @@ function SearchPage() {
                         className="flex items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted"
                       >
                         <Avatar className="h-9 w-9">
+                          {s.photoUrl ? <AvatarImage src={s.photoUrl} alt={s.nameEn} /> : null}
                           <AvatarFallback className="bg-accent text-xs text-accent-foreground">
                             {initials(s.nameEn)}
                           </AvatarFallback>
@@ -138,6 +139,7 @@ function SearchPage() {
                       className="flex items-center gap-3 rounded-lg border border-border p-3 transition-colors hover:bg-muted"
                     >
                       <Avatar className="h-9 w-9">
+                        {t.photoUrl ? <AvatarImage src={t.photoUrl} alt={t.name} /> : null}
                         <AvatarFallback className="bg-accent text-xs text-accent-foreground">
                           {initials(t.name)}
                         </AvatarFallback>
