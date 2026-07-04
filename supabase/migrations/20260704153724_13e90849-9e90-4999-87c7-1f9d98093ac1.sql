@@ -1,0 +1,1 @@
+ALTER TABLE public.teachers ADD COLUMN IF NOT EXISTS photo_url text NOT NULL DEFAULT ''::text;

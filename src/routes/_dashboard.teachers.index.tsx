@@ -5,7 +5,7 @@ import { toast } from "sonner";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
-import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import {
   Table,
@@ -25,7 +25,7 @@ import {
   AlertDialogHeader,
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
-import { formatBDT, shortId, type Teacher } from "@/lib/madrasah-data";
+import { CURRENT_MONTH, formatBDT, shortId, type Teacher } from "@/lib/madrasah-data";
 import { useTeachers, removeTeacher } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/teachers/")({
@@ -47,7 +47,7 @@ function initials(name: string) {
     .toUpperCase();
 }
 
-const CURRENT_MONTH = 5; // June in the mock dataset
+
 
 function TeachersPage() {
   const teachers = useTeachers();
@@ -139,6 +139,7 @@ function TeachersPage() {
                       <TableCell>
                         <div className="flex items-center gap-3">
                           <Avatar className="h-9 w-9">
+                            {t.photoUrl ? <AvatarImage src={t.photoUrl} alt={t.name} /> : null}
                             <AvatarFallback className="bg-accent text-xs text-accent-foreground">
                               {initials(t.name)}
                             </AvatarFallback>

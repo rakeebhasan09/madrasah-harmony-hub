@@ -43,6 +43,9 @@ export const MONTHS = [
   "December",
 ];
 
+// The current calendar month (0-11), used for "this month" payment status.
+export const CURRENT_MONTH = new Date().getMonth();
+
 export const GENDERS = ["Male", "Female"];
 export const RELIGIONS = ["Islam", "Hinduism", "Christianity", "Buddhism", "Other"];
 export const BLOOD_GROUPS = ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"];
@@ -86,6 +89,8 @@ export interface Teacher {
   mobile: string;
   salary: number;
   joined: string;
+  // Data URL / link to the teacher's profile photo (empty when none).
+  photoUrl: string;
   // Months (index 0-11) that the salary has been paid this year.
   paidMonths: number[];
 }

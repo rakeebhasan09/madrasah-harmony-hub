@@ -14,6 +14,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import {
   CLASSES,
+  CURRENT_MONTH,
   formatBDT,
 } from "@/lib/madrasah-data";
 import { useStudents, useTeachers } from "@/lib/madrasah-store";
@@ -42,8 +43,8 @@ function Overview() {
   const totalStudents = students.length;
   const totalTeachers = teachers.length;
 
-  // Expected vs collected fees for the current month (index 5 = June in mock).
-  const month = 5;
+  // Expected vs collected fees for the current calendar month.
+  const month = CURRENT_MONTH;
   let expected = 0;
   let collected = 0;
   for (const s of students) {

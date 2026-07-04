@@ -1,9 +1,10 @@
+import { useRef, useState } from "react";
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { format } from "date-fns";
-import { CalendarIcon, UserPlus } from "lucide-react";
+import { CalendarIcon, Upload, UserPlus, X } from "lucide-react";
 import { toast } from "sonner";
 
 import { DashboardHeader } from "@/components/dashboard-header";
@@ -51,6 +52,8 @@ type FormValues = z.infer<typeof schema>;
 
 function RegisterTeacher() {
   const navigate = useNavigate();
+  const fileRef = useRef<HTMLInputElement>(null);
+  const [photo, setPhoto] = useState<string | null>(null);
 
   const form = useForm<FormValues>({
     resolver: zodResolver(schema),
@@ -61,6 +64,18 @@ function RegisterTeacher() {
     },
   });
 
+  function onPhoto(e: React.ChangeEvent<HTMLInputElement>) {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      toast.error("Please select an image file.");
+      return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => setPhoto(reader.result as string);
+    reader.readAsDataURL(file);
+  }
+
   async function onSubmit(values: FormValues) {
     try {
       await addTeacher({
@@ -69,6 +84,7 @@ function RegisterTeacher() {
         mobile: values.mobile,
         salary: values.salary,
         joined: format(values.joined, "yyyy-MM-dd"),
+        photoUrl: photo ?? undefined,
       });
       toast.success(`${values.name} registered successfully.`);
       navigate({ to: "/teachers" });
@@ -84,6 +100,45 @@ function RegisterTeacher() {
       <div className="p-6">
         <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto max-w-2xl space-y-6">
+            <Card>
+              <CardHeader>
+                <CardTitle>Teacher Photo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-5">
+                  <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-muted">
+                    {photo ? (
+                      <img src={photo} alt="Teacher preview" className="h-full w-full object-cover" />
+                    ) : (
+                      <Upload className="h-7 w-7 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onPhoto}
+                    />
+                    <div className="flex gap-2">
+                      <Button type="button" variant="outline" onClick={() => fileRef.current?.click()}>
+                        <Upload className="h-4 w-4" /> Upload Photo
+                      </Button>
+                      {photo ? (
+                        <Button type="button" variant="ghost" onClick={() => setPhoto(null)}>
+                          <X className="h-4 w-4" /> Remove
+                        </Button>
+                      ) : null}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      JPG or PNG. A clear passport-style photo works best.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
             <Card>
               <CardHeader>
                 <CardTitle>Teacher Details</CardTitle>
