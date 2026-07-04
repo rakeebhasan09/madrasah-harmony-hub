@@ -102,6 +102,45 @@ function RegisterTeacher() {
           <form onSubmit={form.handleSubmit(onSubmit)} className="mx-auto max-w-2xl space-y-6">
             <Card>
               <CardHeader>
+                <CardTitle>Teacher Photo</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="flex items-center gap-5">
+                  <div className="flex h-28 w-28 shrink-0 items-center justify-center overflow-hidden rounded-xl border border-dashed border-border bg-muted">
+                    {photo ? (
+                      <img src={photo} alt="Teacher preview" className="h-full w-full object-cover" />
+                    ) : (
+                      <Upload className="h-7 w-7 text-muted-foreground" />
+                    )}
+                  </div>
+                  <div className="space-y-2">
+                    <input
+                      ref={fileRef}
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={onPhoto}
+                    />
+                    <div className="flex gap-2">
+                      <Button type="button" variant="outline" onClick={() => fileRef.current?.click()}>
+                        <Upload className="h-4 w-4" /> Upload Photo
+                      </Button>
+                      {photo ? (
+                        <Button type="button" variant="ghost" onClick={() => setPhoto(null)}>
+                          <X className="h-4 w-4" /> Remove
+                        </Button>
+                      ) : null}
+                    </div>
+                    <p className="text-xs text-muted-foreground">
+                      JPG or PNG. A clear passport-style photo works best.
+                    </p>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
                 <CardTitle>Teacher Details</CardTitle>
               </CardHeader>
               <CardContent className="grid gap-4 sm:grid-cols-2">
