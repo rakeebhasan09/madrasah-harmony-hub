@@ -53,6 +53,7 @@ type TeacherRow = {
   mobile: string;
   salary: number;
   joined: string | null;
+  photo_url: string;
   paid_months: number[] | null;
 };
 
@@ -92,6 +93,7 @@ function mapTeacher(row: TeacherRow): Teacher {
     mobile: row.mobile,
     salary: row.salary,
     joined: row.joined ?? "",
+    photoUrl: row.photo_url,
     paidMonths: row.paid_months ?? [],
   };
 }
@@ -244,6 +246,7 @@ export interface NewTeacherInput {
   mobile: string;
   salary: number;
   joined: string;
+  photoUrl?: string;
 }
 
 export async function addTeacher(input: NewTeacherInput): Promise<void> {
@@ -253,6 +256,7 @@ export async function addTeacher(input: NewTeacherInput): Promise<void> {
     mobile: input.mobile,
     salary: input.salary,
     joined: input.joined,
+    photo_url: input.photoUrl ?? "",
   });
   if (error) throw error;
   await loadTeachers();
