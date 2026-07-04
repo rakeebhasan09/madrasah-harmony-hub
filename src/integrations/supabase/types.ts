@@ -100,6 +100,7 @@ export type Database = {
           mobile: string
           name: string
           paid_months: number[]
+          photo_url: string
           salary: number
           subject: string
         }
@@ -110,6 +111,7 @@ export type Database = {
           mobile?: string
           name: string
           paid_months?: number[]
+          photo_url?: string
           salary?: number
           subject?: string
         }
@@ -120,6 +122,7 @@ export type Database = {
           mobile?: string
           name?: string
           paid_months?: number[]
+          photo_url?: string
           salary?: number
           subject?: string
         }
