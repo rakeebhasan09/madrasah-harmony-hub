@@ -82,6 +82,18 @@ function ClassPage() {
 
   const [viewStudent, setViewStudent] = useState<Student | null>(null);
   const [editStudent, setEditStudent] = useState<Student | null>(null);
+  const [deleteStudent, setDeleteStudent] = useState<Student | null>(null);
+
+  async function confirmDelete() {
+    if (!deleteStudent) return;
+    try {
+      await removeStudent(deleteStudent.id);
+      toast.success(`${deleteStudent.nameEn} removed.`);
+    } catch {
+      toast.error("Could not remove the student. Please try again.");
+    }
+    setDeleteStudent(null);
+  }
 
   return (
     <div>
