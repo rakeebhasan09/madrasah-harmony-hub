@@ -259,6 +259,26 @@ function ClassPage() {
         open={!!editStudent}
         onOpenChange={(open) => !open && setEditStudent(null)}
       />
+
+      <AlertDialog
+        open={!!deleteStudent}
+        onOpenChange={(open) => !open && setDeleteStudent(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this student?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteStudent
+                ? `${deleteStudent.nameEn} will be permanently removed from the system. This cannot be undone.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
