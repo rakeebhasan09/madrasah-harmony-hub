@@ -12,7 +12,7 @@ function DashboardLayout() {
       <div className="hidden md:block">
         <AppSidebar />
       </div>
-      <main className="flex-1 overflow-y-auto">
+      <main className="relative flex-1 overflow-y-auto">
         <Outlet />
       </main>
       <Toaster position="top-right" richColors />
