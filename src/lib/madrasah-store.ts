@@ -281,6 +281,12 @@ export async function recordStudentPayment(studentId: string, month: number): Pr
   await loadStudents();
 }
 
+export async function removeStudent(id: string): Promise<void> {
+  const { error } = await supabase.from("students").delete().eq("id", id);
+  if (error) throw error;
+  await loadStudents();
+}
+
 export async function recordSalaryPayment(teacherId: string, month: number): Promise<void> {
   const current = teachers.find((t) => t.id === teacherId);
   const months = Array.from(new Set([...(current?.paidMonths ?? []), month])).sort(

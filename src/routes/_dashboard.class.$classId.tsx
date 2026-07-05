@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle, Eye, Pencil } from "lucide-react";
+import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle, Eye, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +17,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   getClass,
   formatBDT,
   shortId,
@@ -23,7 +34,7 @@ import {
   type ClassId,
   type Student,
 } from "@/lib/madrasah-data";
-import { useStudents } from "@/lib/madrasah-store";
+import { useStudents, removeStudent } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/class/$classId")({
   head: ({ params }) => {
@@ -71,6 +82,18 @@ function ClassPage() {
 
   const [viewStudent, setViewStudent] = useState<Student | null>(null);
   const [editStudent, setEditStudent] = useState<Student | null>(null);
+  const [deleteStudent, setDeleteStudent] = useState<Student | null>(null);
+
+  async function confirmDelete() {
+    if (!deleteStudent) return;
+    try {
+      await removeStudent(deleteStudent.id);
+      toast.success(`${deleteStudent.nameEn} removed.`);
+    } catch {
+      toast.error("Could not remove the student. Please try again.");
+    }
+    setDeleteStudent(null);
+  }
 
   return (
     <div>
@@ -206,6 +229,14 @@ function ClassPage() {
                             >
                               <Pencil className="h-4 w-4" /> Edit
                             </Button>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              aria-label={`Delete ${s.nameEn}`}
+                              onClick={() => setDeleteStudent(s)}
+                            >
+                              <Trash2 className="h-4 w-4 text-destructive" />
+                            </Button>
                           </div>
                         </TableCell>
                       </TableRow>
@@ -228,6 +259,26 @@ function ClassPage() {
         open={!!editStudent}
         onOpenChange={(open) => !open && setEditStudent(null)}
       />
+
+      <AlertDialog
+        open={!!deleteStudent}
+        onOpenChange={(open) => !open && setDeleteStudent(null)}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this student?</AlertDialogTitle>
+            <AlertDialogDescription>
+              {deleteStudent
+                ? `${deleteStudent.nameEn} will be permanently removed from the system. This cannot be undone.`
+                : ""}
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction onClick={confirmDelete}>Delete</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
