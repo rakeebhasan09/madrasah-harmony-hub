@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
-import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle, Eye, Pencil } from "lucide-react";
+import { UserPlus, Wallet, Users, CheckCircle2, AlertCircle, Eye, Pencil, Trash2 } from "lucide-react";
+import { toast } from "sonner";
 import { DashboardHeader } from "@/components/dashboard-header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -16,6 +17,16 @@ import {
   TableRow,
 } from "@/components/ui/table";
 import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
+import {
   getClass,
   formatBDT,
   shortId,
@@ -23,7 +34,7 @@ import {
   type ClassId,
   type Student,
 } from "@/lib/madrasah-data";
-import { useStudents } from "@/lib/madrasah-store";
+import { useStudents, removeStudent } from "@/lib/madrasah-store";
 
 export const Route = createFileRoute("/_dashboard/class/$classId")({
   head: ({ params }) => {
