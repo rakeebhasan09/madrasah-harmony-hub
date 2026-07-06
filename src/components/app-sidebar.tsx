@@ -133,10 +133,23 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-sidebar-border px-5 py-4">
-        <p className="text-xs text-sidebar-foreground/60">
-          Signed in as <span className="font-medium text-sidebar-accent-foreground">Admin</span>
+      <div className="border-t border-sidebar-border px-4 py-4">
+        <p className="truncate px-1 text-xs text-sidebar-foreground/60">
+          Signed in as{" "}
+          <span className="font-medium text-sidebar-accent-foreground">
+            {email || "Admin"}
+          </span>
         </p>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSignOut}
+          disabled={signingOut}
+          className="mt-2 w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </Button>
       </div>
     </aside>
   );
