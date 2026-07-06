@@ -1,4 +1,6 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   Baby,
@@ -7,9 +9,12 @@ import {
   GraduationCap,
   Users,
   Wallet,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
 import { CLASSES } from "@/lib/madrasah-data";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
