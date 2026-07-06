@@ -1,8 +1,17 @@
-import { createFileRoute, Outlet } from "@tanstack/react-router";
+import { createFileRoute, Outlet, redirect } from "@tanstack/react-router";
+import { supabase } from "@/integrations/supabase/client";
+import { getAdminExists } from "@/lib/auth.functions";
 import { AppSidebar } from "@/components/app-sidebar";
 import { Toaster } from "@/components/ui/sonner";
 
 export const Route = createFileRoute("/_dashboard")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { data } = await supabase.auth.getUser();
+    if (data.user) return;
+    const { exists } = await getAdminExists();
+    throw redirect({ to: exists ? "/login" : "/register" });
+  },
   component: DashboardLayout,
 });
 
