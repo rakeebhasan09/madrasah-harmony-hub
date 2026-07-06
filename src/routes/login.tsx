@@ -1,13 +1,23 @@
 import { useState } from "react";
-import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { GraduationCap, Lock, Mail, LogIn } from "lucide-react";
+import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
+import { GraduationCap, Lock, Mail, LogIn, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 
+import { supabase } from "@/integrations/supabase/client";
+import { getAdminExists } from "@/lib/auth.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
 export const Route = createFileRoute("/login")({
+  ssr: false,
+  beforeLoad: async () => {
+    const { exists } = await getAdminExists();
+    if (!exists) throw redirect({ to: "/register" });
+    const { data } = await supabase.auth.getSession();
+    if (data.session) throw redirect({ to: "/" });
+  },
   head: () => ({
     meta: [
       { title: "Admin Login — Madrasah Management System" },
@@ -19,12 +29,20 @@ export const Route = createFileRoute("/login")({
 
 function LoginPage() {
   const navigate = useNavigate();
-  const [email, setEmail] = useState("admin@madrasah.edu");
+  const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  function onSubmit(e: React.FormEvent) {
+  async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    // UI shell only — authentication will be wired with Lovable Cloud later.
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) {
+      toast.error("Invalid email or password");
+      return;
+    }
+    toast.success("Welcome back");
     navigate({ to: "/" });
   }
 
@@ -59,6 +77,7 @@ function LoginPage() {
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     className="pl-9"
+                    placeholder="admin@example.com"
                     required
                   />
                 </div>
@@ -78,8 +97,13 @@ function LoginPage() {
                   />
                 </div>
               </div>
-              <Button type="submit" className="w-full">
-                <LogIn className="h-4 w-4" /> Sign in
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <LogIn className="h-4 w-4" />
+                )}
+                Sign in
               </Button>
             </form>
             <p className="mt-4 text-center text-xs text-muted-foreground">
