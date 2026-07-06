@@ -1,4 +1,6 @@
-import { Link, useRouterState } from "@tanstack/react-router";
+import { useEffect, useState } from "react";
+import { Link, useRouterState, useNavigate } from "@tanstack/react-router";
+import { useQueryClient } from "@tanstack/react-query";
 import {
   LayoutDashboard,
   Baby,
@@ -7,9 +9,12 @@ import {
   GraduationCap,
   Users,
   Wallet,
+  LogOut,
   type LucideIcon,
 } from "lucide-react";
 import { CLASSES } from "@/lib/madrasah-data";
+import { supabase } from "@/integrations/supabase/client";
+import { Button } from "@/components/ui/button";
 import { cn } from "@/lib/utils";
 
 interface NavItem {
@@ -67,6 +72,16 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState<string>("");
+  const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setEmail(data.user?.email ?? "");
+    });
+  }, []);
 
   const isActive = (item: NavItem) => {
     const target = item.params
@@ -75,6 +90,14 @@ export function AppSidebar() {
     if (item.exact) return pathname === target;
     return pathname === target || pathname.startsWith(target + "/");
   };
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/login", replace: true });
+  }
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
@@ -110,10 +133,23 @@ export function AppSidebar() {
         ))}
       </nav>
 
-      <div className="border-t border-sidebar-border px-5 py-4">
-        <p className="text-xs text-sidebar-foreground/60">
-          Signed in as <span className="font-medium text-sidebar-accent-foreground">Admin</span>
+      <div className="border-t border-sidebar-border px-4 py-4">
+        <p className="truncate px-1 text-xs text-sidebar-foreground/60">
+          Signed in as{" "}
+          <span className="font-medium text-sidebar-accent-foreground">
+            {email || "Admin"}
+          </span>
         </p>
+        <Button
+          variant="ghost"
+          size="sm"
+          onClick={handleSignOut}
+          disabled={signingOut}
+          className="mt-2 w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          <LogOut className="h-4 w-4" />
+          Sign out
+        </Button>
       </div>
     </aside>
   );

@@ -1,49 +1,59 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
-import { GraduationCap, Lock, Mail, LogIn, Loader2 } from "lucide-react";
+import { GraduationCap, Lock, Mail, UserPlus, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
-import { getAdminExists } from "@/lib/auth.functions";
+import { getAdminExists, registerAdmin } from "@/lib/auth.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 
-export const Route = createFileRoute("/login")({
+export const Route = createFileRoute("/register")({
   ssr: false,
   beforeLoad: async () => {
     const { exists } = await getAdminExists();
-    if (!exists) throw redirect({ to: "/register" });
-    const { data } = await supabase.auth.getSession();
-    if (data.session) throw redirect({ to: "/" });
+    if (exists) throw redirect({ to: "/login" });
   },
   head: () => ({
     meta: [
-      { title: "Admin Login — Madrasah Management System" },
-      { name: "description", content: "Secure admin sign in for the madrasah management system." },
+      { title: "Admin Registration — Madrasah Management System" },
+      { name: "description", content: "Create the first administrator account for the madrasah management system." },
     ],
   }),
-  component: LoginPage,
+  component: RegisterPage,
 });
 
-function LoginPage() {
+function RegisterPage() {
   const navigate = useNavigate();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirm, setConfirm] = useState("");
   const [loading, setLoading] = useState(false);
 
   async function onSubmit(e: React.FormEvent) {
     e.preventDefault();
-    setLoading(true);
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    setLoading(false);
-    if (error) {
-      toast.error("Invalid email or password");
+    if (password.length < 8) {
+      toast.error("Password must be at least 8 characters");
       return;
     }
-    toast.success("Welcome back");
-    navigate({ to: "/" });
+    if (password !== confirm) {
+      toast.error("Passwords do not match");
+      return;
+    }
+    setLoading(true);
+    try {
+      await registerAdmin({ data: { email, password } });
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) throw error;
+      toast.success("Admin account created");
+      navigate({ to: "/" });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   }
 
   return (
@@ -54,16 +64,16 @@ function LoginPage() {
             <GraduationCap className="h-7 w-7" />
           </div>
           <h1 className="mt-4 text-xl font-semibold text-sidebar-accent-foreground">
-            Madrasah Management
+            Set up your admin account
           </h1>
           <p className="mt-1 text-sm text-sidebar-foreground/70">
-            Admin access only
+            This is a one-time setup for the first administrator
           </p>
         </div>
 
         <Card>
           <CardHeader>
-            <CardTitle>Sign in</CardTitle>
+            <CardTitle>Register admin</CardTitle>
           </CardHeader>
           <CardContent>
             <form onSubmit={onSubmit} className="space-y-4">
@@ -89,9 +99,24 @@ function LoginPage() {
                   <Input
                     id="password"
                     type="password"
-                    placeholder="••••••••"
+                    placeholder="At least 8 characters"
                     value={password}
                     onChange={(e) => setPassword(e.target.value)}
+                    className="pl-9"
+                    required
+                  />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="confirm">Confirm password</Label>
+                <div className="relative">
+                  <Lock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="confirm"
+                    type="password"
+                    placeholder="Re-enter password"
+                    value={confirm}
+                    onChange={(e) => setConfirm(e.target.value)}
                     className="pl-9"
                     required
                   />
@@ -101,14 +126,11 @@ function LoginPage() {
                 {loading ? (
                   <Loader2 className="h-4 w-4 animate-spin" />
                 ) : (
-                  <LogIn className="h-4 w-4" />
+                  <UserPlus className="h-4 w-4" />
                 )}
-                Sign in
+                Create admin account
               </Button>
             </form>
-            <p className="mt-4 text-center text-xs text-muted-foreground">
-              Only administrators can register students and teachers.
-            </p>
           </CardContent>
         </Card>
       </div>
