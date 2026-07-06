@@ -72,6 +72,16 @@ function NavLink({ item, active }: { item: NavItem; active: boolean }) {
 
 export function AppSidebar() {
   const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const navigate = useNavigate();
+  const queryClient = useQueryClient();
+  const [email, setEmail] = useState<string>("");
+  const [signingOut, setSigningOut] = useState(false);
+
+  useEffect(() => {
+    supabase.auth.getUser().then(({ data }) => {
+      setEmail(data.user?.email ?? "");
+    });
+  }, []);
 
   const isActive = (item: NavItem) => {
     const target = item.params
@@ -80,6 +90,14 @@ export function AppSidebar() {
     if (item.exact) return pathname === target;
     return pathname === target || pathname.startsWith(target + "/");
   };
+
+  async function handleSignOut() {
+    setSigningOut(true);
+    await queryClient.cancelQueries();
+    queryClient.clear();
+    await supabase.auth.signOut();
+    navigate({ to: "/login", replace: true });
+  }
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col bg-sidebar text-sidebar-foreground">
