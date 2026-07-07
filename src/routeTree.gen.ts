@@ -18,6 +18,7 @@ import { Route as DashboardTeachersRouteImport } from './routes/_dashboard.teach
 import { Route as DashboardSearchRouteImport } from './routes/_dashboard.search'
 import { Route as DashboardSalariesRouteImport } from './routes/_dashboard.salaries'
 import { Route as DashboardFeesRouteImport } from './routes/_dashboard.fees'
+import { Route as DashboardChangePasswordRouteImport } from './routes/_dashboard.change-password'
 import { Route as DashboardTeachersIndexRouteImport } from './routes/_dashboard.teachers.index'
 import { Route as DashboardTeachersNewRouteImport } from './routes/_dashboard.teachers.new'
 import { Route as DashboardStudentsNewRouteImport } from './routes/_dashboard.students.new'
@@ -67,6 +68,11 @@ const DashboardFeesRoute = DashboardFeesRouteImport.update({
   path: '/fees',
   getParentRoute: () => DashboardRoute,
 } as any)
+const DashboardChangePasswordRoute = DashboardChangePasswordRouteImport.update({
+  id: '/change-password',
+  path: '/change-password',
+  getParentRoute: () => DashboardRoute,
+} as any)
 const DashboardTeachersIndexRoute = DashboardTeachersIndexRouteImport.update({
   id: '/',
   path: '/',
@@ -93,6 +99,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/change-password': typeof DashboardChangePasswordRoute
   '/fees': typeof DashboardFeesRoute
   '/salaries': typeof DashboardSalariesRoute
   '/search': typeof DashboardSearchRoute
@@ -106,6 +113,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/change-password': typeof DashboardChangePasswordRoute
   '/fees': typeof DashboardFeesRoute
   '/salaries': typeof DashboardSalariesRoute
   '/search': typeof DashboardSearchRoute
@@ -121,6 +129,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/register': typeof RegisterRoute
   '/sitemap.xml': typeof SitemapDotxmlRoute
+  '/_dashboard/change-password': typeof DashboardChangePasswordRoute
   '/_dashboard/fees': typeof DashboardFeesRoute
   '/_dashboard/salaries': typeof DashboardSalariesRoute
   '/_dashboard/search': typeof DashboardSearchRoute
@@ -138,6 +147,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/sitemap.xml'
+    | '/change-password'
     | '/fees'
     | '/salaries'
     | '/search'
@@ -151,6 +161,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/sitemap.xml'
+    | '/change-password'
     | '/fees'
     | '/salaries'
     | '/search'
@@ -165,6 +176,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/register'
     | '/sitemap.xml'
+    | '/_dashboard/change-password'
     | '/_dashboard/fees'
     | '/_dashboard/salaries'
     | '/_dashboard/search'
@@ -248,6 +260,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DashboardFeesRouteImport
       parentRoute: typeof DashboardRoute
     }
+    '/_dashboard/change-password': {
+      id: '/_dashboard/change-password'
+      path: '/change-password'
+      fullPath: '/change-password'
+      preLoaderRoute: typeof DashboardChangePasswordRouteImport
+      parentRoute: typeof DashboardRoute
+    }
     '/_dashboard/teachers/': {
       id: '/_dashboard/teachers/'
       path: '/'
@@ -293,6 +312,7 @@ const DashboardTeachersRouteWithChildren =
   DashboardTeachersRoute._addFileChildren(DashboardTeachersRouteChildren)
 
 interface DashboardRouteChildren {
+  DashboardChangePasswordRoute: typeof DashboardChangePasswordRoute
   DashboardFeesRoute: typeof DashboardFeesRoute
   DashboardSalariesRoute: typeof DashboardSalariesRoute
   DashboardSearchRoute: typeof DashboardSearchRoute
@@ -303,6 +323,7 @@ interface DashboardRouteChildren {
 }
 
 const DashboardRouteChildren: DashboardRouteChildren = {
+  DashboardChangePasswordRoute: DashboardChangePasswordRoute,
   DashboardFeesRoute: DashboardFeesRoute,
   DashboardSalariesRoute: DashboardSalariesRoute,
   DashboardSearchRoute: DashboardSearchRoute,
@@ -325,13 +346,3 @@ const rootRouteChildren: RootRouteChildren = {
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
   ._addFileTypes<FileRouteTypes>()
-
-import type { getRouter } from './router.tsx'
-import type { startInstance } from './start.ts'
-declare module '@tanstack/react-start' {
-  interface Register {
-    ssr: true
-    router: Awaited<ReturnType<typeof getRouter>>
-    config: Awaited<ReturnType<typeof startInstance.getOptions>>
-  }
-}
