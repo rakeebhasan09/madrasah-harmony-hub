@@ -142,6 +142,17 @@ export function AppSidebar() {
           </span>
         </p>
         <Button
+          asChild
+          variant="ghost"
+          size="sm"
+          className="mt-2 w-full justify-start gap-2 text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+        >
+          <Link to="/change-password">
+            <KeyRound className="h-4 w-4" />
+            Change password
+          </Link>
+        </Button>
+        <Button
           variant="ghost"
           size="sm"
           onClick={handleSignOut}
