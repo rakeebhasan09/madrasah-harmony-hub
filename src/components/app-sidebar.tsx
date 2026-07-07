@@ -10,6 +10,7 @@ import {
   Users,
   Wallet,
   LogOut,
+  KeyRound,
   type LucideIcon,
 } from "lucide-react";
 import { CLASSES } from "@/lib/madrasah-data";
