@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createFileRoute, useNavigate, redirect } from "@tanstack/react-router";
-import { GraduationCap, Lock, Mail, LogIn, Loader2 } from "lucide-react";
+import { GraduationCap, Mail, LogIn, Loader2 } from "lucide-react";
 import { toast } from "sonner";
 
 import { supabase } from "@/integrations/supabase/client";
@@ -9,6 +9,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { PasswordInput } from "@/components/password-input";
 
 export const Route = createFileRoute("/login")({
   ssr: false,
