@@ -86,14 +86,18 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     meta: [
       { charSet: "utf-8" },
       { name: "viewport", content: "width=device-width, initial-scale=1" },
-      { title: "Madrasah Management System" },
+      { title: "Ababil Model Madrasah & islamic School" },
       { name: "description", content: "Admin dashboard to manage students, teachers, fees, and madrasah finances." },
       { name: "author", content: "Madrasah Management" },
-      { property: "og:title", content: "Madrasah Management System" },
+      { property: "og:title", content: "Ababil Model Madrasah & islamic School" },
       { property: "og:description", content: "Admin dashboard to manage students, teachers, fees, and madrasah finances." },
       { property: "og:type", content: "website" },
       { name: "twitter:card", content: "summary" },
       { name: "twitter:site", content: "@Lovable" },
+      { name: "twitter:title", content: "Ababil Model Madrasah & islamic School" },
+      { name: "twitter:description", content: "Admin dashboard to manage students, teachers, fees, and madrasah finances." },
+      { property: "og:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fa93fd06-2ea0-45da-ad69-76dd2ac59f5d/id-preview-23310b16--4b73cde6-85b5-49f2-b613-47c31e4b0c08.lovable.app-1783438674985.png" },
+      { name: "twitter:image", content: "https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/fa93fd06-2ea0-45da-ad69-76dd2ac59f5d/id-preview-23310b16--4b73cde6-85b5-49f2-b613-47c31e4b0c08.lovable.app-1783438674985.png" },
     ],
     links: [
       {
